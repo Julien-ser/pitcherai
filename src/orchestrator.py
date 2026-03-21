@@ -6,16 +6,7 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 from src.config import settings
-from src.database import (
-    init_db,
-    get_engine,
-    investors,
-    startups,
-    campaigns,
-    email_templates,
-    outreaches,
-)
-from src.models_db import InvestorDB, StartupDB, CampaignDB, EmailTemplateDB, OutreachDB
+from src.database import get_engine
 from src.models import Investor, Startup, Campaign, EmailTemplate, Outreach
 from src.collector import CrunchbaseClient, AngelListClient, RSSCollector
 from src.targeter import TargetFilter, TargetRanker, ConnectionFinder
@@ -39,11 +30,11 @@ class PitcheRaiOrchestrator:
         self.response_tracker = ResponseTracker(self.gmail_client)
         self.personalizer = Personalizer()
         self.llm_client = LLMClient(
-            api_key=settings.openrouter_api_key, model=settings.default_model
+            api_key=settings.openrouter_api_key or "", model=settings.default_model
         )
         self.collectors = {
-            "crunchbase": CrunchbaseClient(settings.crunchbase_api_key),
-            "angellist": AngelListClient(settings.angellist_access_token),
+            "crunchbase": CrunchbaseClient(settings.crunchbase_api_key or ""),
+            "angellist": AngelListClient(settings.angellist_access_token or ""),
             "rss": RSSCollector(),
         }
         self.ranker = TargetRanker()
@@ -54,8 +45,7 @@ class PitcheRaiOrchestrator:
         logger.info("Initializing PitcheRai orchestrator...")
 
         # Initialize database
-        self.db_engine = get_engine(settings.database_url)
-        init_db(self.db_engine)
+        self.db_engine = get_engine()
         from sqlalchemy.orm import sessionmaker
 
         self.db_session = sessionmaker(
@@ -235,6 +225,17 @@ class PitcheRaiOrchestrator:
                     founder_name="Founder",  # TODO: Get from startup data
                     founder_email=startup.email or "founder@example.com",
                 )
+
+                # Ensure required fields are not None
+                if (
+                    email_template.id is None
+                    or email_template.subject is None
+                    or email_template.body is None
+                ):
+                    logger.error(
+                        f"Invalid email template for investor {investor.name}: missing required fields"
+                    )
+                    continue
 
                 # Create outreach record
                 outreach = Outreach(
