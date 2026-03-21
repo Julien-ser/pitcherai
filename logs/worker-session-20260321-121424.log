@@ -2298,3 +2298,97 @@ Task completed! I've verified that the development environment is fully set up w
 
 The project is ready for the next phase: **Core Implementation** (Phase 2).
 📝 Log saved: logs/iteration-3.md
+📊 Token Usage: 17250 / Session: 32750 / 64000
+Unstaged changes after reset:
+M	logs/worker-session-20260321-121424.log
+✅ Changes committed
+To https://github.com/Julien-ser/pitcherai.git
+   534ff1f..c258f61  wiggum/session-1774109664 -> wiggum/session-1774109664
+✅ Pushed to GitHub (branch: wiggum/session-1774109664)
+📊 Updated Tasks: 3/12 completed, 9 remaining
+   Next task: Implement main features...
+📍 Iteration 4 at Sat Mar 21 12:25:40 PM EDT 2026...
+🤖 OpenCode processing: Implement main features
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.agent_role
+[0m→ [0mRead TASKS.md
+Since there's no `.agent_role` file, I'm operating as the generic developer. I need to complete "Implement main features" task. Let me first understand the current project structure.
+[0m
+[0m$ [0mfind /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai -type f -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.json" -o -name "*.toml" 2>/dev/null | head -20
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/share/jupyter/nbextensions/pydeck/index.js
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/share/jupyter/nbextensions/pydeck/extensionRequires.js
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/setuptools_ext.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/pkgconfig.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/__init__.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/cffi_opcode.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/commontypes.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/vengine_cpy.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/model.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/verifier.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/vengine_gen.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/_imp_emulation.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/_shimmed_dist_utils.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/error.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/lock.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/backend_ctypes.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/ffiplatform.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/recompiler.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/api.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/.venv/lib/python3.12/site-packages/cffi/cparser.py
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai
+total 660
+drwxr-xr-x 12 julien julien   4096 Mar 21 12:23 .
+drwxr-xr-x 30 julien julien   4096 Mar 21 00:10 ..
+-rw-r--r--  1 julien julien  10447 Mar 21 12:16 ARCHITECTURE.md
+-rw-r--r--  1 julien julien  53248 Mar 21 12:23 .coverage
+drwxr-xr-x  2 julien julien   4096 Mar 21 10:49 data
+-rw-r--r--  1 julien julien    737 Mar 21 12:19 .env.example
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:25 .git
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:10 .github
+-rw-r--r--  1 julien julien      4 Mar 21 10:38 .gitignore
+drwxr-xr-x  2 julien julien   4096 Mar 21 12:23 htmlcov
+drwxr-xr-x  2 julien julien   4096 Mar 21 12:25 logs
+-rw-r--r--  1 julien julien   9218 Mar 21 00:10 prompt.txt
+-rw-r--r--  1 julien julien   2002 Mar 21 12:16 pyproject.toml
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:17 .pytest_cache
+-rw-r--r--  1 julien julien   6396 Mar 21 12:19 README.md
+drwxr-xr-x  4 julien julien   4096 Mar 21 01:07 .ruff_cache
+drwxr-xr-x  3 julien julien   4096 Mar 21 12:16 src
+-rw-r--r--  1 julien julien   2595 Mar 21 12:25 TASKS.md
+drwxr-xr-x  4 julien julien   4096 Mar 21 12:14 tests
+-rw-r--r--  1 julien julien 521433 Mar 21 12:22 uv.lock
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:23 .venv
+[0m
+[0m→ [0mRead pyproject.toml
+[0m→ [0mRead ARCHITECTURE.md
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src
+total 12
+drwxr-xr-x  3 julien julien 4096 Mar 21 12:16 .
+drwxr-xr-x 12 julien julien 4096 Mar 21 12:23 ..
+drwxr-xr-x  7 julien julien 4096 Mar 21 12:18 pitcherai
+[0m
+[0m$ [0mfind /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src -type f -name "*.py" | head -30
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/__init__.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/main.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/database.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/config.py
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests
+total 16
+drwxr-xr-x  4 julien julien 4096 Mar 21 12:14 .
+drwxr-xr-x 12 julien julien 4096 Mar 21 12:23 ..
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 integration
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 unit
+[0m
+[0m→ [0mRead src/pitcherai/models.py
+[0m→ [0mRead src/pitcherai/database.py
+[0m→ [0mRead src/pitcherai/main.py
+📝 Log saved: logs/iteration-4.md
