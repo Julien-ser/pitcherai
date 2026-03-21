@@ -2,21 +2,22 @@
 
 from pydantic_settings import BaseSettings
 from pydantic import Field
+from typing import Optional
 
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # OpenAI
-    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
+    openai_api_key: str = Field("", env="OPENAI_API_KEY")
     openai_model: str = Field("gpt-4-turbo-preview", env="OPENAI_MODEL")
     openai_max_tokens: int = Field(500, env="OPENAI_MAX_TOKENS")
     openai_temperature: float = Field(0.7, env="OPENAI_TEMPERATURE")
 
     # Gmail API
-    gmail_client_id: str = Field(..., env="GMAIL_CLIENT_ID")
-    gmail_client_secret: str = Field(..., env="GMAIL_CLIENT_SECRET")
-    gmail_refresh_token: str = Field(..., env="GMAIL_REFRESH_TOKEN")
+    gmail_client_id: str = Field("", env="GMAIL_CLIENT_ID")
+    gmail_client_secret: str = Field("", env="GMAIL_CLIENT_SECRET")
+    gmail_refresh_token: str = Field("", env="GMAIL_REFRESH_TOKEN")
     gmail_access_token: str = Field("", env="GMAIL_ACCESS_TOKEN")
 
     # Database
@@ -39,6 +40,12 @@ class Settings(BaseSettings):
     user_name: str = Field("", env="USER_NAME")
     user_company: str = Field("", env="USER_COMPANY")
     user_description: str = Field("", env="USER_DESCRIPTION")
+
+    # Email template
+    default_draft_template: str = Field(
+        "Hi {{name}},\n\nI noticed your recent investment in {{recent_investment}} and believe our startup aligns with your thesis.\n\nWe're building {{company_description}} and would love to share more.\n\nWould you be open to a 15-minute call?\n\nBest,\n{{sender_name}}",
+        env="DEFAULT_DRAFT_TEMPLATE",
+    )
 
     # Learning
     enable_learning: bool = Field(True, env="ENABLE_LEARNING")

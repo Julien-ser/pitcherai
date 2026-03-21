@@ -4,7 +4,7 @@
 
 ## Mission
 
-Automate the fundraising outreach funnel from target discovery to first contact, while maintainingpersonalization that gets replies. Monitor Crunchbase, AngelList, and press releases to find active investors in your niche, then draft personalized emails based on their recent investments, shared connections, and portfolio alignment.
+Automate the fundraising outreach funnel from target discovery to first contact, while maintaining personalization that gets replies. Monitor Crunchbase, AngelList, and press releases to find active investors in your niche, then draft personalized emails based on their recent investments, shared connections, and portfolio alignment.
 
 ## Features
 
@@ -21,10 +21,18 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system design, component bre
 
 ## Current Status
 
-**Phase 1: Setup & Planning** (Completed)
+**Phase 2: Core Implementation** (In Progress)
 - ✅ Requirements review & architecture design
 - ✅ Development environment and dependencies setup
 - ✅ Project structure created
+- ✅ Database models and ORM setup
+- ✅ Collector module (funding data discovery)
+- ✅ Targeter module (investor scoring & filtering)
+- ✅ Drafter module (AI email generation)
+- ✅ Email module (Gmail API integration)
+- ✅ Campaign orchestration
+- ✅ CLI interface
+- ⏳ Tests and validation
 
 ## Tech Stack
 
@@ -35,7 +43,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system design, component bre
 - Streamlit for dashboard UI
 - APScheduler for periodic tasks
 
-## Quick Start (Coming Soon)
+## Quick Start
 
 ```bash
 # Clone and setup
@@ -43,17 +51,30 @@ git clone <repo>
 cd pitcherai
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -e ".[dev]"
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your API keys:
+# - OPENAI_API_KEY
+# - GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN
+# - USER_EMAIL, USER_NAME, USER_COMPANY
 
-# Run dashboard
-python -m dashboard.app
+# Initialize database
+pitcherai init
 
-# Or run CLI collector
-python -m collector.main
+# Discover investors
+pitcherai collect --limit 20
+
+# List top investors
+pitcherai list-investors --min-score 0.6
+
+# Create a campaign
+pitcherai create-campaign --name "Test Campaign"
+
+# Launch dashboard
+pitcherai dashboard
+# or streamlit run src/dashboard/__init__.py
 ```
 
 ## Project Structure
@@ -68,13 +89,24 @@ pitcherai/
 │   ├── email/         # Gmail API integration
 │   ├── dashboard/     # Streamlit UI
 │   ├── database/      # Data models and persistence
-│   ├── config.py      # Configuration management
+│   ├── config/        # Configuration management
 │   └── main.py        # CLI entry point
 ├── tests/
 ├── requirements.txt
+├── pyproject.toml
 ├── config/
 └── ARCHITECTURE.md
 ```
+
+## CLI Commands
+
+- `pitcherai init` - Initialize database tables
+- `pitcherai collect` - Discover investors from funding announcements
+- `pitcherai list-investors` - List investors from database
+- `pitcherai create-campaign` - Create and run a full campaign
+- `pitcherai send-campaign` - Send emails for a campaign
+- `pitcherai dashboard` - Launch Streamlit dashboard
+- `pitcherai shell` - Interactive Python shell with app context
 
 ## Development
 
@@ -83,7 +115,15 @@ This project uses the OpenCode agent framework for autonomous development. See `
 ### Running Tests
 
 ```bash
-pytest tests/
+pytest tests/ -v
+```
+
+### Code Quality
+
+```bash
+ruff check src/
+black src/
+mypy src/
 ```
 
 ## Environment Variables
@@ -91,19 +131,36 @@ pytest tests/
 Create a `.env` file with:
 
 ```env
+# Required
 OPENAI_API_KEY=your_key
+
+# Gmail API (OAuth 2.0)
 GMAIL_CLIENT_ID=your_client_id
-GMAIL_CLIENT_SECRET=your_secret
-# ... more to be documented
+GMAIL_CLIENT_SECRET=your_client_secret
+GMAIL_REFRESH_TOKEN=your_refresh_token
+GMAIL_TOKEN_URI=https://oauth2.googleapis.com/token
+
+# User profile
+USER_EMAIL=your@email.com
+USER_NAME=Your Name
+USER_COMPANY=Your Company
+USER_DESCRIPTION=Brief description of what your startup does
+
+# Optional
+CRUNCHBASE_API_KEY=your_key
+ANGELLIST_API_KEY=your_key
+DATABASE_URL=sqlite:///pitcherai.db
+DEBUG=True
 ```
 
 ## Roadmap
 
-- [ ] Phase 1: Core data collection and targeting
-- [ ] Phase 2: AI drafting and dashboard
-- [ ] Phase 3: Email integration and tracking
-- [ ] Phase 4: Learning engine and optimization
-- [ ] Phase 5: Multi-user support and scaling
+- [x] Phase 1: Setup & Planning
+- [x] Phase 2: Core Implementation (in progress)
+- [ ] Phase 3: Testing & Integration
+- [ ] Phase 4: Documentation & Deployment
+- [ ] Phase 5: Learning engine & optimization
+- [ ] Phase 6: Multi-user support & scaling
 
 ## Contributing
 
@@ -111,4 +168,5 @@ This is an autonomous project. To contribute, check the issues or modify `TASKS.
 
 ## License
 
-TBD
+MIT
+
