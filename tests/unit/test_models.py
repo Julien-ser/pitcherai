@@ -132,19 +132,20 @@ def test_email_tracking_model(sample_uuid):
     assert tracking.message_id == "msg_123"
     assert tracking.opens_count == 0
 
-
-def test_analytics_model(sample_uuid):
-    """Test Analytics model creation."""
-    analytics = Analytics(
-        id=uuid4(),
-        campaign_id=sample_uuid,
-        date=date(2024, 1, 15),
-        sent_count=100,
-        open_count=25,
-        click_count=5,
-        reply_count=3,
-    )
-    assert analytics.sent_count == 100
-    assert analytics.open_count == 25
-    assert analytics.open_rate == 25.0  # 25/100 * 100
-    assert analytics.reply_rate == 3.0  # 3/100 * 100
+    def test_analytics_model(sample_uuid):
+        """Test Analytics model creation."""
+        analytics = Analytics(
+            id=uuid4(),
+            campaign_id=sample_uuid,
+            date=date(2024, 1, 15),
+            sent_count=100,
+            open_count=25,
+            click_count=5,
+            reply_count=3,
+            open_rate=25.0,
+            reply_rate=3.0,
+        )
+        assert analytics.sent_count == 100
+        assert analytics.open_count == 25
+        assert analytics.open_rate == 25.0  # 25/100 * 100
+        assert analytics.reply_rate == 3.0  # 3/100 * 100

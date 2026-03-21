@@ -19,7 +19,7 @@
 - [x] Build core logic
 
 ## Phase 3: Testing
-- [ ] Write and run tests
+- [x] Write and run tests
 - [ ] Integration testing
 - [ ] Bug fixes
 

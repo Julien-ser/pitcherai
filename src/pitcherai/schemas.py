@@ -104,7 +104,7 @@ class CampaignBase(BaseModel):
 
 
 class CampaignCreate(CampaignBase):
-    pass
+    status: Optional[Literal["draft", "active", "paused", "completed"]] = "draft"
 
 
 class CampaignUpdate(BaseModel):
