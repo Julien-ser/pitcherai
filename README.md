@@ -148,13 +148,14 @@ GitHub Actions runs automated tests on every push:
 
 See `TASKS.md` for current development progress and upcoming work.
 
-Current phase: Phase 1 - Setup & Planning
+Current phase: Phase 2 - Core Implementation
 
 Key tasks:
 - [x] Review requirements and design architecture
 - [x] Set up development environment and dependencies
 - [x] Create project structure
-- [ ] Implement main features (Phase 2)
+- [x] Integrate APIs and libraries (Crunchbase, AngelList, Gmail, OpenRouter)
+- [ ] Build core logic
 - [ ] Write and run tests (Phase 3)
 - [ ] Documentation and deployment (Phase 4)
 

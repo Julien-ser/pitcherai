@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from typing import Any, List, Optional, Dict
 import re
 import feedparser
+import httpx
 
 from src.models import Investor, Startup
 
@@ -17,6 +18,7 @@ class CrunchbaseCollector:
 
     def __init__(self, api_key: str = None):
         self.api_key = api_key
+        self.base_url = "https://api.crunchbase.com/v3"
         # Mock data for demo when API key not provided
         self.mock_investors = [
             {
@@ -82,10 +84,72 @@ class CrunchbaseCollector:
             ]
             return mock_rounds
 
-        # TODO: Implement real async API call to Crunchbase
-        logger.warning("Real Crunchbase API integration not yet implemented")
-        await asyncio.sleep(0.1)
-        return []
+        # Real Crunchbase API integration
+        try:
+            # Calculate date filter
+            cutoff_date = (datetime.now() - timedelta(days=days_back)).strftime(
+                "%Y-%m-%d"
+            )
+
+            # Crunchbase API v3 endpoints
+            # Using the funding-rounds endpoint with date filters
+            url = f"{self.base_url}/funding-rounds"
+            params = {
+                "updated_at_min": cutoff_date,
+                "sort": "updated_at DESC",
+                "limit": 100,
+            }
+            headers = {
+                "X-cb-user-key": self.api_key,
+                "Content-Type": "application/json",
+            }
+
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(url, params=params, headers=headers)
+                response.raise_for_status()
+                data = response.json()
+
+            # Parse Crunchbase response into our format
+            rounds = []
+            for item in data.get("data", {}).get("items", []):
+                funding_round = item.get("properties", {})
+
+                # Extract company information
+                company = funding_round.get("company", {})
+                company_name = company.get("properties", {}).get(
+                    "name", "Unknown Company"
+                )
+                industry = self._extract_industry(company)
+
+                # Extract investors
+                investor_ids = []
+                for investor in funding_round.get("investors", []):
+                    inv_props = investor.get("properties", {})
+                    inv_id = inv_props.get("uuid", inv_props.get("name", ""))
+                    investor_ids.append(inv_id)
+
+                round_data = {
+                    "id": funding_round.get("uuid", f"round_{len(rounds)}"),
+                    "company_name": company_name,
+                    "industry": industry,
+                    "stage": funding_round.get("stage", {}).get("value", ""),
+                    "amount": funding_round.get("money_raised", 0),
+                    "date": funding_round.get("updated_at", ""),
+                    "investor_ids": investor_ids,
+                }
+                rounds.append(round_data)
+
+            logger.info(
+                f"Successfully fetched {len(rounds)} funding rounds from Crunchbase"
+            )
+            return rounds
+
+        except httpx.HTTPError as e:
+            logger.error(f"Crunchbase API HTTP error: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"Crunchbase API error: {e}")
+            return []
 
     async def get_investor_details(self, investor_id: str) -> Optional[Investor]:
         """Get detailed investor information."""
@@ -99,10 +163,93 @@ class CrunchbaseCollector:
                     return Investor(**inv_data)
             return None
 
-        # TODO: Implement real async API call
-        logger.warning("Real Crunchbase API integration not yet implemented")
-        await asyncio.sleep(0.1)
-        return None
+        # Real Crunchbase API integration
+        try:
+            # First, determine if this is a person or organization
+            # Try fetching as person first
+            url = f"{self.base_url}/people/{investor_id}"
+            headers = {
+                "X-cb-user-key": self.api_key,
+                "Content-Type": "application/json",
+            }
+
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(url, headers=headers)
+
+                if response.status_code == 404:
+                    # Try as organization
+                    url = f"{self.base_url}/organizations/{investor_id}"
+                    response = await client.get(url, headers=headers)
+
+                response.raise_for_status()
+                data = response.json()
+
+            properties = data.get("data", {}).get("properties", {})
+
+            # Extract investor details
+            investor = Investor(
+                id=investor_id,
+                name=properties.get("name", "Unknown Investor"),
+                email="",  # Crunchbase doesn't typically provide direct email
+                firm=properties.get("name", ""),  # Use name as firm for now
+                focus_areas=self._extract_focus_areas(properties),
+                stage_preference=self._extract_stage_preferences(properties),
+                portfolio=[],  # Would need separate API calls
+                recent_investments=[],  # Would need separate API calls
+                connections=[],  # Would need LinkedIn integration
+                location=properties.get("location", {}).get("value", "")
+                if properties.get("location")
+                else None,
+                check_size_min=properties.get("min_investment"),
+                check_size_max=properties.get("max_investment"),
+                website=properties.get("website", {}).get("value", "")
+                if properties.get("website")
+                else None,
+            )
+
+            logger.info(f"Successfully fetched investor details for {investor_id}")
+            return investor
+
+        except httpx.HTTPError as e:
+            logger.error(f"Crunchbase API HTTP error fetching investor: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Crunchbase API error fetching investor: {e}")
+            return None
+
+    def _extract_focus_areas(self, properties: dict) -> List[str]:
+        """Extract focus areas from Crunchbase properties."""
+        focus_areas = []
+        categories = properties.get("category", [])
+        for cat in categories:
+            if isinstance(cat, dict):
+                focus_areas.append(cat.get("value", cat.get("name", "")))
+        return focus_areas if focus_areas else ["Unknown"]
+
+    def _extract_stage_preferences(self, properties: dict) -> List[str]:
+        """Extract investment stage preferences."""
+        # Crunchbase may have investment stage info
+        stages = properties.get("investment_stage", [])
+        if stages:
+            return [s.get("value", s) if isinstance(s, dict) else s for s in stages]
+        # Default stages based on investor type
+        return ["seed", "series-a", "series-b"]
+
+    def _extract_industry(self, company: dict) -> str:
+        """Extract industry from company data."""
+        # Crunchbase category/value extraction
+        if isinstance(company, dict):
+            categories = company.get("properties", {}).get("category", [])
+            if categories:
+                # Return first category name
+                for cat in categories:
+                    if isinstance(cat, dict):
+                        return cat.get("value", cat.get("name", "Unknown"))
+            # Try industry field
+            industry = company.get("properties", {}).get("industry", "")
+            if industry:
+                return industry
+        return "Unknown"
 
 
 class AngelListCollector:
@@ -110,6 +257,7 @@ class AngelListCollector:
 
     def __init__(self, access_token: str = None):
         self.access_token = access_token
+        self.base_url = "https://api.angel.co/1"
         self.mock_startups = [
             {
                 "id": "startup_al_001",
@@ -176,10 +324,61 @@ class AngelListCollector:
             await asyncio.sleep(0.1)
             return self.mock_startups
 
-        # TODO: Implement real async API call
-        logger.warning("Real AngelList API integration not yet implemented")
-        await asyncio.sleep(0.1)
-        return []
+        # Real AngelList API integration
+        try:
+            url = f"{self.base_url}/startups"
+            headers = {
+                "Authorization": f"Bearer {self.access_token}",
+                "Content-Type": "application/json",
+            }
+            # AngelList API doesn't have a direct "recently funded" endpoint,
+            # so we fetch startups with recent updates and filter for funding news
+            params = {
+                "filter": "raised_funding",  # If supported by API
+                "sort": "updated_at DESC",
+                "per_page": 100,
+            }
+
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(url, params=params, headers=headers)
+                response.raise_for_status()
+                data = response.json()
+
+            # Parse AngelList response
+            startups = []
+            for item in data.get("startups", []):
+                startup = item.get("startup", {})
+                startup_data = {
+                    "id": startup.get("id", f"startup_al_{len(startups)}"),
+                    "name": startup.get("name", "Unknown Startup"),
+                    "industry": startup.get("markets", [{}])[0].get("name", "Tech")
+                    if startup.get("markets")
+                    else "Tech",
+                    "stage": startup.get("stage", ""),
+                    "description": startup.get(
+                        "tagline", startup.get("description", "")
+                    ),
+                    "funding_needed": startup.get("funding_needed", 0),
+                    "location": startup.get("location", {}).get("name", "")
+                    if startup.get("location")
+                    else "",
+                    "website": startup.get("company_url", ""),
+                    "founders": [
+                        f"{f.get('first_name', '')} {f.get('last_name', '')}".strip()
+                        for f in startup.get("founders", [])
+                    ],
+                }
+                startups.append(startup_data)
+
+            logger.info(f"Successfully fetched {len(startups)} startups from AngelList")
+            return startups
+
+        except httpx.HTTPError as e:
+            logger.error(f"AngelList API HTTP error: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"AngelList API error: {e}")
+            return []
 
     async def fetch_funding_announcements(self) -> List[Dict[str, Any]]:
         """Fetch funding announcements from AngelList."""
@@ -211,10 +410,59 @@ class AngelListCollector:
             ]
             return mock_announcements
 
-        # TODO: Implement real async API call
-        logger.warning("Real AngelList API integration not yet implemented")
-        await asyncio.sleep(0.1)
-        return []
+        # Real AngelList API integration
+        try:
+            url = f"{self.base_url}/funding_announcements"
+            headers = {
+                "Authorization": f"Bearer {self.access_token}",
+                "Content-Type": "application/json",
+            }
+            params = {
+                "sort": "created_at DESC",
+                "per_page": 100,
+            }
+
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(url, params=params, headers=headers)
+                response.raise_for_status()
+                data = response.json()
+
+            # Parse AngelList response
+            announcements = []
+            for item in data.get("funding_announcements", []):
+                announcement = item.get("funding_announcement", {})
+                startup = announcement.get("startup", {})
+
+                # Extract investor IDs from the announcement
+                investor_ids = []
+                for investor in announcement.get("investors", []):
+                    investor_ids.append(str(investor.get("id", "")))
+
+                announcement_data = {
+                    "id": str(announcement.get("id", f"ann_{len(announcements)}")),
+                    "company_id": str(startup.get("id", "")),
+                    "company_name": startup.get("name", "Unknown Company"),
+                    "industry": startup.get("markets", [{}])[0].get("name", "Tech")
+                    if startup.get("markets")
+                    else "Tech",
+                    "stage": startup.get("stage", ""),
+                    "amount": announcement.get("amount_raised", 0),
+                    "date": announcement.get("created_at", ""),
+                    "investor_ids": investor_ids,
+                }
+                announcements.append(announcement_data)
+
+            logger.info(
+                f"Successfully fetched {len(announcements)} funding announcements from AngelList"
+            )
+            return announcements
+
+        except httpx.HTTPError as e:
+            logger.error(f"AngelList API HTTP error: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"AngelList API error: {e}")
+            return []
 
     async def search_investors(self, criteria: Dict[str, Any]) -> List[Investor]:
         """Search for investors by criteria."""
@@ -238,10 +486,83 @@ class AngelListCollector:
                     filtered.append(inv)
             return filtered
 
-        # TODO: Implement real async API call
-        logger.warning("Real AngelList API integration not yet implemented")
-        await asyncio.sleep(0.1)
-        return []
+        # Real AngelList API integration
+        try:
+            url = f"{self.base_url}/investors"
+            headers = {
+                "Authorization": f"Bearer {self.access_token}",
+                "Content-Type": "application/json",
+            }
+            params = {
+                "per_page": 100,
+            }
+
+            # Add filters based on criteria
+            if "industry" in criteria:
+                params["markets"] = criteria["industry"]
+            if "stage" in criteria:
+                params["investment_stage"] = criteria["stage"]
+            if "location" in criteria:
+                params["location"] = criteria["location"]
+
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(url, params=params, headers=headers)
+                response.raise_for_status()
+                data = response.json()
+
+            # Parse AngelList response into Investor models
+            investors = []
+            for item in data.get("investors", []):
+                inv_data = item.get("investor", {})
+
+                # Extract focus areas from markets
+                focus_areas = []
+                for market in inv_data.get("markets", []):
+                    if isinstance(market, dict):
+                        focus_areas.append(market.get("name", ""))
+                    elif isinstance(market, str):
+                        focus_areas.append(market)
+
+                # Extract stage preferences
+                stage_preference = []
+                for stage in inv_data.get("investment_stage", []):
+                    if isinstance(stage, dict):
+                        stage_preference.append(stage.get("value", ""))
+                    elif isinstance(stage, str):
+                        stage_preference.append(stage)
+
+                investor = Investor(
+                    id=str(inv_data.get("id", f"inv_al_{len(investors)}")),
+                    name=inv_data.get("name", "Unknown Investor"),
+                    email=inv_data.get("email", ""),
+                    firm=inv_data.get("company", {}).get("name", "")
+                    if inv_data.get("company")
+                    else inv_data.get("name", ""),
+                    focus_areas=focus_areas or [],
+                    stage_preference=stage_preference or [],
+                    portfolio=[],  # Would need separate API call to get portfolio
+                    recent_investments=[],  # Would need separate API call
+                    connections=[],  # Would need LinkedIn integration
+                    location=inv_data.get("location", {}).get("name", "")
+                    if inv_data.get("location")
+                    else None,
+                    check_size_min=inv_data.get("min_investment"),
+                    check_size_max=inv_data.get("max_investment"),
+                    website=inv_data.get("angellist_url", ""),
+                )
+                investors.append(investor)
+
+            logger.info(
+                f"Successfully fetched {len(investors)} investors from AngelList"
+            )
+            return investors
+
+        except httpx.HTTPError as e:
+            logger.error(f"AngelList API HTTP error: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"AngelList API error: {e}")
+            return []
 
 
 class RSSFeedCollector:
