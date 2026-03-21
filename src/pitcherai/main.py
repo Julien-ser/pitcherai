@@ -1,24 +1,32 @@
 """FastAPI main application."""
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
-from pitcherai.config import settings
-from pitcherai.database import get_db, init_db, close_db
-from pitcherai.models import User, Investor, Campaign, Template
-from pitcherai.schemas import (
+from sqlalchemy import select
+from datetime import datetime, timezone
+
+from .config import settings
+from .database import get_db, init_db, close_db
+from . import crud
+from .models import Investment
+from .services.email_generation import email_generator
+from .services.campaign import campaign_service
+from .schemas import (
     UserCreate,
     UserUpdate,
     UserResponse,
     InvestorCreate,
+    InvestorUpdate,
     InvestorResponse,
-    CampaignCreate,
-    CampaignUpdate,
-    CampaignResponse,
     TemplateCreate,
     TemplateUpdate,
     TemplateResponse,
+    CampaignCreate,
+    CampaignUpdate,
+    CampaignResponse,
+    CampaignTargetUpdate,
     EmailGenerateRequest,
     EmailGenerateResponse,
 )
@@ -52,21 +60,34 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "ok", "timestamp": datetime.datetime.utcnow().isoformat()}
+    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
 
 
 # Users
-@app.post("/api/users", response_model=UserResponse)
+@app.post(
+    "/api/users", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     """Create a new user."""
-    # Implementation will be in crud.py
-    raise NotImplementedError
+    existing = await crud.user.get_by_email(db, email=user.email)
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return await crud.user.create(db, obj_in=user)
 
 
 @app.get("/api/users/{user_id}", response_model=UserResponse)
 async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     """Get user by ID."""
-    raise NotImplementedError
+    from uuid import UUID
+
+    try:
+        uid = UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+    user = await crud.user.get(db, id=uid)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 
 @app.put("/api/users/{user_id}", response_model=UserResponse)
@@ -74,7 +95,16 @@ async def update_user(
     user_id: str, user_update: UserUpdate, db: AsyncSession = Depends(get_db)
 ):
     """Update user."""
-    raise NotImplementedError
+    from uuid import UUID
+
+    try:
+        uid = UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid user ID")
+    user = await crud.user.get(db, id=uid)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return await crud.user.update(db, db_obj=user, obj_in=user_update)
 
 
 # Investors
@@ -86,34 +116,77 @@ async def list_investors(
     db: AsyncSession = Depends(get_db),
 ):
     """List investors with optional filters."""
-    raise NotImplementedError
+    if investor_type:
+        return await crud.investor.list_by_type(
+            db, investor_type=investor_type, skip=skip, limit=limit
+        )
+    return await crud.investor.get_multi(db, skip=skip, limit=limit)
 
 
-@app.post("/api/investors", response_model=InvestorResponse)
+@app.post(
+    "/api/investors",
+    response_model=InvestorResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_investor(investor: InvestorCreate, db: AsyncSession = Depends(get_db)):
     """Create a new investor."""
-    raise NotImplementedError
+    return await crud.investor.create(db, obj_in=investor)
 
 
 @app.get("/api/investors/{investor_id}", response_model=InvestorResponse)
 async def get_investor(investor_id: str, db: AsyncSession = Depends(get_db)):
     """Get investor by ID."""
-    raise NotImplementedError
+    from uuid import UUID
+
+    try:
+        iid = UUID(investor_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid investor ID")
+    investor = await crud.investor.get(db, id=iid)
+    if not investor:
+        raise HTTPException(status_code=404, detail="Investor not found")
+    return investor
+
+
+@app.get("/api/investors/{investor_id}/investments")
+async def get_investor_investments(
+    investor_id: str, db: AsyncSession = Depends(get_db)
+):
+    """Get portfolio investments for an investor."""
+    from uuid import UUID
+
+    try:
+        iid = UUID(investor_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid investor ID")
+    investor = await crud.investor.get(db, id=iid)
+    if not investor:
+        raise HTTPException(status_code=404, detail="Investor not found")
+    return {"investor_id": investor_id, "investments": investor.investments}
 
 
 # Templates
 @app.get("/api/templates", response_model=list[TemplateResponse])
 async def list_templates(
-    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
+    skip: int = 0,
+    limit: int = 100,
+    active_only: bool = False,
+    db: AsyncSession = Depends(get_db),
 ):
     """List email templates."""
-    raise NotImplementedError
+    if active_only:
+        return await crud.template.get_active(db)
+    return await crud.template.get_multi(db, skip=skip, limit=limit)
 
 
-@app.post("/api/templates", response_model=TemplateResponse)
+@app.post(
+    "/api/templates",
+    response_model=TemplateResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_template(template: TemplateCreate, db: AsyncSession = Depends(get_db)):
     """Create a new template."""
-    raise NotImplementedError
+    return await crud.template.create(db, obj_in=template)
 
 
 @app.put("/api/templates/{template_id}", response_model=TemplateResponse)
@@ -123,28 +196,124 @@ async def update_template(
     db: AsyncSession = Depends(get_db),
 ):
     """Update template."""
-    raise NotImplementedError
+    from uuid import UUID
+
+    try:
+        tid = UUID(template_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid template ID")
+    template = await crud.template.get(db, id=tid)
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return await crud.template.update(db, db_obj=template, obj_in=template_update)
 
 
 # Campaigns
-@app.post("/api/campaigns", response_model=CampaignResponse)
+@app.post(
+    "/api/campaigns",
+    response_model=CampaignResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_campaign(campaign: CampaignCreate, db: AsyncSession = Depends(get_db)):
     """Create a new campaign."""
-    raise NotImplementedError
+    return await crud.campaign.create(db, obj_in=campaign)
 
 
 @app.get("/api/campaigns", response_model=list[CampaignResponse])
 async def list_campaigns(
-    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
+    skip: int = 0,
+    limit: int = 100,
+    user_id: str | None = None,
+    db: AsyncSession = Depends(get_db),
 ):
     """List campaigns."""
-    raise NotImplementedError
+    if user_id:
+        from uuid import UUID
+
+        try:
+            uid = UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid user ID")
+        return await crud.campaign.get_by_user(db, user_id=uid, skip=skip, limit=limit)
+    return await crud.campaign.get_multi(db, skip=skip, limit=limit)
 
 
 @app.get("/api/campaigns/{campaign_id}", response_model=CampaignResponse)
 async def get_campaign(campaign_id: str, db: AsyncSession = Depends(get_db)):
     """Get campaign by ID."""
-    raise NotImplementedError
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+    campaign = await crud.campaign.get(db, id=cid)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return campaign
+
+
+@app.put("/api/campaigns/{campaign_id}", response_model=CampaignResponse)
+async def update_campaign(
+    campaign_id: str,
+    campaign_update: CampaignUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Update campaign."""
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+    campaign = await crud.campaign.get(db, id=cid)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return await crud.campaign.update(db, db_obj=campaign, obj_in=campaign_update)
+
+
+@app.post("/api/campaigns/{campaign_id}/start", response_model=CampaignResponse)
+async def start_campaign(campaign_id: str, db: AsyncSession = Depends(get_db)):
+    """Start a campaign."""
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+    campaign = await campaign_service.start_campaign(db, cid)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return campaign
+
+
+@app.post("/api/campaigns/{campaign_id}/pause", response_model=CampaignResponse)
+async def pause_campaign(campaign_id: str, db: AsyncSession = Depends(get_db)):
+    """Pause a campaign."""
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+    campaign = await crud.campaign.get(db, id=cid)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    update = CampaignUpdate(status="paused")
+    return await crud.campaign.update(db, db_obj=campaign, obj_in=update)
+
+
+@app.get("/api/campaigns/{campaign_id}/targets")
+async def get_campaign_targets(campaign_id: str, db: AsyncSession = Depends(get_db)):
+    """Get campaign targets."""
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+    targets = await crud.campaign_target.get_by_campaign(db, campaign_id=cid)
+    return {"campaign_id": campaign_id, "targets": targets}
 
 
 # Email Generation
@@ -153,7 +322,73 @@ async def generate_email(
     request: EmailGenerateRequest, db: AsyncSession = Depends(get_db)
 ):
     """Generate personalized email for an investor."""
-    raise NotImplementedError
+    # Get investor
+    investor = await crud.investor.get(db, id=request.investor_id)
+    if not investor:
+        raise HTTPException(status_code=404, detail="Investor not found")
+
+    # Get template
+    template = await crud.template.get(db, id=request.template_id)
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+
+    # Get user
+    user = await crud.user.get(db, id=request.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Get investor's recent investments
+    investments = await db.execute(
+        select(crud.models.Investment)
+        .where(crud.models.Investment.investor_id == investor.id)
+        .order_by(crud.models.Investment.investment_date.desc())
+        .limit(5)
+    )
+    recent_investments = [
+        {
+            "startup_name": inv.startup_name,
+            "round_type": inv.round_type,
+            "investment_date": inv.investment_date.isoformat()
+            if inv.investment_date
+            else None,
+        }
+        for inv in investments.scalars().all()
+    ]
+
+    # Generate email
+    try:
+        subject, body = await email_generator.generate_email(
+            investor_name=investor.name,
+            investor_firm=investor.firm_name,
+            investor_focus=investor.focus_areas,
+            investor_recent_investments=recent_investments,
+            user_startup=user.startup_name,
+            user_description=user.startup_description or "",
+            user_niche=user.niche,
+            template_subject=template.subject_template,
+            template_body=template.body_template,
+            custom_vars=request.custom_vars,
+        )
+        return EmailGenerateResponse(subject=subject, body=body)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Email generation failed: {str(e)}"
+        )
+
+
+@app.post("/api/generate-campaign-emails")
+async def generate_campaign_emails(
+    campaign_id: str, db: AsyncSession = Depends(get_db)
+):
+    """Generate emails for all pending targets in a campaign."""
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+    await campaign_service._generate_emails_for_campaign(db, cid)
+    return {"message": "Emails generated successfully", "campaign_id": campaign_id}
 
 
 if __name__ == "__main__":

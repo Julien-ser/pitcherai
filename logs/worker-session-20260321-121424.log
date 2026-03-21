@@ -2508,3 +2508,500 @@ drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 unit
 [ ] Mark TASKS.md task as complete
 [0m
 📝 Log saved: logs/iteration-6.md
+📊 Token Usage: 5250 / Session: 47750 / 64000
+Unstaged changes after reset:
+M	logs/worker-session-20260321-121424.log
+✅ Changes committed
+To https://github.com/Julien-ser/pitcherai.git
+   000d3b0..103ef72  wiggum/session-1774109664 -> wiggum/session-1774109664
+✅ Pushed to GitHub (branch: wiggum/session-1774109664)
+📊 Updated Tasks: 3/12 completed, 9 remaining
+   Next task: Implement main features...
+📍 Iteration 7 at Sat Mar 21 12:29:05 PM EDT 2026...
+✓ Progress: Git commit found
+📊 Task attempt 4: Progress detected, continuing...
+📚 Loading context from previous iteration attempts...
+   Found context in: iteration-6.md
+🤖 OpenCode processing: Implement main features
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+I need to understand the current project structure and implement the main features for this AI-powered pitch automation agent. Let me start by exploring what already exists.
+[0m✱ [0mGlob "**/*.json"[90m in . · 1 match[0m
+[0m✱ [0mGlob "**/*.py"[90m in . · 7 matches[0m
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai
+total 660
+drwxr-xr-x 12 julien julien   4096 Mar 21 12:23 .
+drwxr-xr-x 30 julien julien   4096 Mar 21 00:10 ..
+-rw-r--r--  1 julien julien  10447 Mar 21 12:16 ARCHITECTURE.md
+-rw-r--r--  1 julien julien  53248 Mar 21 12:23 .coverage
+drwxr-xr-x  2 julien julien   4096 Mar 21 10:49 data
+-rw-r--r--  1 julien julien    737 Mar 21 12:19 .env.example
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:29 .git
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:10 .github
+-rw-r--r--  1 julien julien      4 Mar 21 10:38 .gitignore
+drwxr-xr-x  2 julien julien   4096 Mar 21 12:23 htmlcov
+drwxr-xr-x  2 julien julien   4096 Mar 21 12:29 logs
+-rw-r--r--  1 julien julien   9218 Mar 21 00:10 prompt.txt
+-rw-r--r--  1 julien julien   2002 Mar 21 12:16 pyproject.toml
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:17 .pytest_cache
+-rw-r--r--  1 julien julien   6396 Mar 21 12:19 README.md
+drwxr-xr-x  4 julien julien   4096 Mar 21 01:07 .ruff_cache
+drwxr-xr-x  3 julien julien   4096 Mar 21 12:16 src
+-rw-r--r--  1 julien julien   2595 Mar 21 12:25 TASKS.md
+drwxr-xr-x  4 julien julien   4096 Mar 21 12:14 tests
+-rw-r--r--  1 julien julien 521433 Mar 21 12:22 uv.lock
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:23 .venv
+[0m
+[0m→ [0mRead TASKS.md
+[0m→ [0mRead README.md
+[0m→ [0mRead pyproject.toml
+Let me examine the existing code structure and TASKS.md to understand what's already been implemented:
+Now let me check what's already implemented in the source files:
+[0m→ [0mRead src/pitcherai/main.py
+[0m→ [0mRead src/pitcherai/models.py
+[0m→ [0mRead src/pitcherai/database.py
+[0m→ [0mRead src/pitcherai/config.py
+[0m→ [0mRead src/pitcherai/schemas.py
+[0m→ [0mRead src/pitcherai/crud.py
+Let me check what tests exist and the directory structure:
+[0m
+[0m$ [0mfind /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests -type f -name "*.py" | head -20
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/
+total 68
+drwxr-xr-x 7 julien julien 4096 Mar 21 12:18 .
+drwxr-xr-x 3 julien julien 4096 Mar 21 12:16 ..
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 api
+-rw-r--r-- 1 julien julien 2256 Mar 21 12:17 config.py
+-rw-r--r-- 1 julien julien 2050 Mar 21 12:17 crud.py
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 dashboard
+-rw-r--r-- 1 julien julien 1150 Mar 21 12:17 database.py
+-rw-r--r-- 1 julien julien   82 Mar 21 12:17 __init__.py
+-rw-r--r-- 1 julien julien 4480 Mar 21 12:18 main.py
+-rw-r--r-- 1 julien julien 9447 Mar 21 12:18 models.py
+-rw-r--r-- 1 julien julien 4017 Mar 21 12:17 schemas.py
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 services
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 tasks
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 utils
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/api/ && ls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/ && ls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/tasks/ && ls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/dashboard/
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 .
+drwxr-xr-x 7 julien julien 4096 Mar 21 12:18 ..
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 .
+drwxr-xr-x 7 julien julien 4096 Mar 21 12:18 ..
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 .
+drwxr-xr-x 7 julien julien 4096 Mar 21 12:18 ..
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 12:16 .
+drwxr-xr-x 7 julien julien 4096 Mar 21 12:18 ..
+[0m
+[0m# [0mTodos
+[ ] Implement CRUD operations for all models (User, Investor, Template, Campaign, CampaignTarget)
+[ ] Create email generation service with OpenAI integration
+[ ] Create investor matching/service layer
+[ ] Create campaign management service
+[ ] Implement all API endpoints in main.py
+[ ] Set up Celery tasks for async email sending and data collection
+[ ] Create Streamlit dashboard for email review
+[ ] Write unit tests for CRUD and services
+[ ] Test the application locally and verify all endpoints work
+[ ] Update TASKS.md to mark Phase 2 tasks complete
+[0m
+Perfect! The directories are empty. Now I understand the task: implement the core features. Let me create a comprehensive plan and start building.
+
+Based on the project structure, I need to:
+1. Implement CRUD operations for each model
+2. Create service layer (AI email generation, investor matching, campaign management)
+3. Implement all API endpoints
+4. Create Celery tasks for async operations
+5. Build Streamlit dashboard
+6. Write tests
+
+Let me start by creating the necessary files and implementing the core functionality:
+Now let me implement the CRUD operations for all models:
+[0m← [0mEdit src/pitcherai/crud.py
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py
+@@ -1,11 +1,36 @@
+-"""Basic CRUD operations."""
++"""CRUD operations for all models."""
+ 
+-from sqlalchemy import select, update, delete
++from sqlalchemy import select, update, delete, and_
+ from sqlalchemy.ext.asyncio import AsyncSession
+ from typing import Generic, TypeVar, Type, Optional, List
+ from uuid import UUID
++from datetime import datetime
+ 
++from .models import (
++    User,
++    Investor,
++    Investment,
++    SharedConnection,
++    Template,
++    Campaign,
++    CampaignTarget,
++    EmailTracking,
++    Analytics,
++)
++from .schemas import (
++    UserCreate,
++    UserUpdate,
++    InvestorCreate,
++    InvestorUpdate,
++    TemplateCreate,
++    TemplateUpdate,
++    CampaignCreate,
++    CampaignUpdate,
++    CampaignTargetCreate,
++    CampaignTargetUpdate,
++)
++
+ ModelType = TypeVar("ModelType")
+ CreateSchemaType = TypeVar("CreateSchemaType")
+ UpdateSchemaType = TypeVar("UpdateSchemaType")
+ 
+@@ -53,4 +78,170 @@
+     async def delete(self, session: AsyncSession, *, id: UUID) -> bool:
+         """Delete record by ID."""
+         result = await session.execute(delete(self.model).where(self.model.id == id))
+         return result.rowcount > 0
++
++
++# Specific CRUD classes
++class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
++    """CRUD operations for User model."""
++
++    async def get_by_email(self, session: AsyncSession, email: str) -> Optional[User]:
++        """Get user by email."""
++        result = await session.execute(select(User).where(User.email == email))
++        return result.scalar_one_or_none()
++
++
++class CRUDInvestor(CRUDBase[Investor, InvestorCreate, InvestorUpdate]):
++    """CRUD operations for Investor model."""
++
++    async def list_by_type(
++        self, session: AsyncSession, investor_type: str, skip: int = 0, limit: int = 100
++    ) -> List[Investor]:
++        """List investors by type (vc or angel)."""
++        result = await session.execute(
++            select(Investor)
++            .where(Investor.investor_type == investor_type)
++            .offset(skip)
++            .limit(limit)
++        )
++        return result.scalars().all()
++
++    async def search_by_focus(
++        self, session: AsyncSession, focus_area: str, skip: int = 0, limit: int = 100
++    ) -> List[Investor]:
++        """Search investors by focus area."""
++        result = await session.execute(
++            select(Investor)
++            .where(Investor.focus_areas.contains([focus_area]))
++            .offset(skip)
++            .limit(limit)
++        )
++        return result.scalars().all()
++
++
++class CRUDTemplate(CRUDBase[Template, TemplateCreate, TemplateUpdate]):
++    """CRUD operations for Template model."""
++
++    async def get_active(self, session: AsyncSession) -> List[Template]:
++        """Get all active templates."""
++        result = await session.execute(
++            select(Template).where(Template.is_active == True)
++        )
++        return result.scalars().all()
++
++
++class CRUDCampaign(CRUDBase[Campaign, CampaignCreate, CampaignUpdate]):
++    """CRUD operations for Campaign model."""
++
++    async def get_by_user(
++        self, session: AsyncSession, user_id: UUID, skip: int = 0, limit: int = 100
++    ) -> List[Campaign]:
++        """Get campaigns for a specific user."""
++        result = await session.execute(
++            select(Campaign)
++            .where(Campaign.user_id == user_id)
++            .offset(skip)
++            .limit(limit)
++        )
++        return result.scalars().all()
++
++    async def start_campaign(
++        self, session: AsyncSession, campaign_id: UUID
++    ) -> Optional[Campaign]:
++        """Mark campaign as active and set start time."""
++        from datetime import datetime
++
++        update_data = CampaignUpdate(status="active", started_at=datetime.utcnow())
++        return await self.update(
++            session, db_obj=await self.get(session, campaign_id), obj_in=update_data
++        )
++
++    async def complete_campaign(
++        self, session: AsyncSession, campaign_id: UUID
++    ) -> Optional[Campaign]:
++        """Mark campaign as completed and set completion time."""
++        from datetime import datetime
++
++        update_data = CampaignUpdate(status="completed", completed_at=datetime.utcnow())
++        return await self.update(
++            session, db_obj=await self.get(session, campaign_id), obj_in=update_data
++        )
++
++
++class CRUDCampaignTarget(
++    CRUDBase[CampaignTarget, CampaignTargetCreate, CampaignTargetUpdate]
++):
++    """CRUD operations for CampaignTarget model."""
++
++    async def get_by_campaign(
++        self, session: AsyncSession, campaign_id: UUID, skip: int = 0, limit: int = 100
++    ) -> List[CampaignTarget]:
++        """Get targets for a campaign."""
++        result = await session.execute(
++            select(CampaignTarget)
++            .where(CampaignTarget.campaign_id == campaign_id)
++            .offset(skip)
++            .limit(limit)
++        )
++        return result.scalars().all()
++
++    async def get_pending(
++        self, session: AsyncSession, campaign_id: UUID
++    ) -> List[CampaignTarget]:
++        """Get pending targets for a campaign."""
++        result = await session.execute(
++            select(CampaignTarget).where(
++                and_(
++                    CampaignTarget.campaign_id == campaign_id,
++                    CampaignTarget.status == "pending",
++                )
++            )
++        )
++        return result.scalars().all()
++
++    async def mark_sent(
++        self, session: AsyncSession, target_id: UUID
++    ) -> Optional[CampaignTarget]:
++        """Mark a target as sent."""
++        update_data = CampaignTargetUpdate(status="sent", sent_at=datetime.utcnow())
++        return await self.update(
++            session, db_obj=await self.get(session, target_id), obj_in=update_data
++        )
++
++
++class CRUDEmailTracking(CRUDBase[EmailTracking, None, None]):
++    """CRUD operations for EmailTracking model."""
++
++    async def get_by_target(
++        self, session: AsyncSession, target_id: UUID
++    ) -> Optional[EmailTracking]:
++        """Get tracking info for a campaign target."""
++        result = await session.execute(
++            select(EmailTracking).where(EmailTracking.campaign_target_id == target_id)
++        )
++        return result.scalar_one_or_none()
++
++
++class CRUDAnalytics(CRUDBase[Analytics, None, None]):
++    """CRUD operations for Analytics model."""
++
++    async def get_by_campaign_date(
++        self, session: AsyncSession, campaign_id: UUID, date: datetime
++    ) -> Optional[Analytics]:
++        """Get analytics for a campaign on a specific date."""
++        result = await session.execute(
++            select(Analytics).where(
++                and_(Analytics.campaign_id == campaign_id, Analytics.date == date)
++            )
++        )
++        return result.scalar_one_or_none()
++
++
++# Instances
++user = CRUDUser(User)
++investor = CRUDInvestor(Investor)
++template = CRUDTemplate(Template)
++campaign = CRUDCampaign(Campaign)
++campaign_target = CRUDCampaignTarget(CampaignTarget)
++email_tracking = CRUDEmailTracking(EmailTracking)
++analytics = CRUDAnalytics(Analytics)
+
+[0m
+Let me fix the imports and type issues:
+[0m← [0mEdit src/pitcherai/crud.py
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py
+@@ -1,9 +1,9 @@
+ """CRUD operations for all models."""
+ 
+ from sqlalchemy import select, update, delete, and_
+ from sqlalchemy.ext.asyncio import AsyncSession
+-from typing import Generic, TypeVar, Type, Optional, List
++from typing import Optional, List
+ from uuid import UUID
+ from datetime import datetime
+ 
+ from .models import (
+@@ -29,13 +29,9 @@
+     CampaignTargetCreate,
+     CampaignTargetUpdate,
+ )
+ 
+-ModelType = TypeVar("ModelType")
+-CreateSchemaType = TypeVar("CreateSchemaType")
+-UpdateSchemaType = TypeVar("UpdateSchemaType")
+ 
+-
+ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+     """Base CRUD operations for any model."""
+ 
+     def __init__(self, model: Type[ModelType]):
+
+[0m
+I see the issue - there's no InvestorUpdate schema. Let me first add it to schemas.py:
+[0m← [0mEdit src/pitcherai/schemas.py
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py
+@@ -47,8 +47,19 @@
+     source: str
+     raw_data: Optional[dict] = None
+ 
+ 
++class InvestorUpdate(BaseModel):
++    name: Optional[str] = None
++    investor_type: Optional[Literal["vc", "angel"]] = None
++    firm_name: Optional[str] = None
++    email: Optional[EmailStr] = None
++    linkedin_url: Optional[str] = None
++    focus_areas: Optional[list] = None
++    stage_preferences: Optional[list] = None
++    location: Optional[str] = None
++
++
+ class InvestorResponse(InvestorBase):
+     model_config = ConfigDict(from_attributes=True)
+ 
+     id: UUID
+
+[0m
+Now let me completely rewrite crud.py with proper imports and simpler structure (avoiding generic complexity):
+[0m← [0mWrite src/pitcherai/crud.py
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/main.py">
+ERROR [7:6] Stub file not found for "pitcherai.config"
+ERROR [8:6] Stub file not found for "pitcherai.database"
+ERROR [9:6] Stub file not found for "pitcherai.models"
+ERROR [10:6] Stub file not found for "pitcherai.schemas"
+ERROR [55:42] "datetime" is not defined
+ERROR [55:42] Type of "datetime" is unknown
+ERROR [55:42] Type of "utcnow" is unknown
+ERROR [55:42] Type of "isoformat" is unknown
+ERROR [55:12] Return type, "dict[str, str | Unknown]", is partially unknown
+ERROR [53:11] Return type, "dict[str, str | Unknown]", is partially unknown
+ERROR [4:39] Import "HTTPException" is not accessed
+ERROR [9:30] Import "User" is not accessed
+ERROR [9:36] Import "Investor" is not accessed
+ERROR [9:46] Import "Campaign" is not accessed
+ERROR [9:56] Import "Template" is not accessed
+ERROR [17:5] Import "CampaignUpdate" is not accessed
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/database.py">
+ERROR [5:6] Stub file not found for "pitcherai.config"
+ERROR [32:19] Return type of async generator function must be compatible with "AsyncGenerator[AsyncSession, Any]"
+  "AsyncGenerator[AsyncSession, Unknown, Unknown]" is not assignable to "AsyncSession"
+ERROR [28:23] Return type of async generator function must be compatible with "AsyncGenerator[Any, Any]"
+  "AsyncGenerator[Any, Any, Any]" is not assignable to "AsyncSession"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py">
+ERROR [18:6] Stub file not found for "pitcherai.database"
+ERROR [119:36] Object of type "MappedColumn[Any]" is not callable
+  Attribute "__call__" is unknown
+ERROR [119:5] Type of "investor" is unknown
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py">
+ERROR [114:31] Expected type arguments for generic class "dict"
+ERROR [41:27] Expected type arguments for generic class "list"
+ERROR [42:33] Expected type arguments for generic class "list"
+ERROR [48:24] Expected type arguments for generic class "dict"
+ERROR [57:27] Expected type arguments for generic class "list"
+ERROR [58:33] Expected type arguments for generic class "list"
+ERROR [103:31] Expected type arguments for generic class "dict"
+ERROR [165:27] Expected type arguments for generic class "dict"
+</diagnostics>
+
+LSP errors detected in this file, please fix:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py">
+ERROR [67:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [67:16] Type of "rowcount" is unknown
+ERROR [67:16] Return type is unknown
+ERROR [73:16] Type "Sequence[User]" is not assignable to return type "List[User]"
+  "Sequence[User]" is not assignable to "List[User]"
+ERROR [105:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [105:16] Type of "rowcount" is unknown
+ERROR [105:16] Return type is unknown
+ERROR [111:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [122:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [133:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [165:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [165:16] Type of "rowcount" is unknown
+ERROR [165:16] Return type is unknown
+ERROR [171:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [177:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [209:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [209:16] Type of "rowcount" is unknown
+ERROR [209:16] Return type is unknown
+ERROR [215:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+ERROR [226:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+... and 18 more
+</diagnostics>
+[0m
+[0m# [0mTodos
+[ ] Implement CRUD operations for all models (User, Investor, Template, Campaign, CampaignTarget)
+[ ] Create email generation service with OpenAI integration
+[ ] Create investor matching/service layer
+[ ] Create campaign management service
+[ ] Implement all API endpoints in main.py
+[ ] Set up Celery tasks for async email sending and data collection
+[ ] Create Streamlit dashboard for email review
+[ ] Write unit tests for CRUD and services
+[ ] Test the application locally and verify all endpoints work
+[ ] Update TASKS.md to mark Phase 2 tasks complete
+[0m
+Let me mark the first task as in progress and create the email generation service:

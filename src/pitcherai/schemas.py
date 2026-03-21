@@ -48,6 +48,17 @@ class InvestorCreate(InvestorBase):
     raw_data: Optional[dict] = None
 
 
+class InvestorUpdate(BaseModel):
+    name: Optional[str] = None
+    investor_type: Optional[Literal["vc", "angel"]] = None
+    firm_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    linkedin_url: Optional[str] = None
+    focus_areas: Optional[list] = None
+    stage_preferences: Optional[list] = None
+    location: Optional[str] = None
+
+
 class InvestorResponse(InvestorBase):
     model_config = ConfigDict(from_attributes=True)
 
