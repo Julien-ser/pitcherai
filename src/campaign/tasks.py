@@ -7,7 +7,6 @@ from datetime import datetime
 
 from src.orchestrator import get_orchestrator
 from src.models import Startup
-from src.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -124,11 +123,11 @@ def check_responses():
 
 
 # Task 5: Update learning
-def _update_learning_task(campaign_id: str):
+async def _update_learning_task(campaign_id: str):
     """Celery task for updating learning models."""
     orchestrator = get_orchestrator()
     try:
-        orchestrator.initialize()
+        await orchestrator.initialize()
         metrics = orchestrator.update_campaign_learning(campaign_id)
         orchestrator.shutdown()
         return {
@@ -144,4 +143,4 @@ def _update_learning_task(campaign_id: str):
 
 def update_learning(campaign_id: str):
     """Celery task: update learning models based on campaign results."""
-    return _update_learning_task(campaign_id)
+    return asyncio.run(_update_learning_task(campaign_id))

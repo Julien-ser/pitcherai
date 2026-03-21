@@ -2,6 +2,7 @@
 
 import feedparser
 import asyncio
+import time
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 from .base import BaseCollector
@@ -44,16 +45,40 @@ class RSSCollector(BaseCollector):
         for entry in feed.entries[:50]:  # Limit to recent 50 entries
             try:
                 published = entry.get("published_parsed") or entry.get("updated_parsed")
-                if published:
-                    pub_date = datetime(*published[:6])
-                    if pub_date < cutoff_date:
-                        continue
-                else:
+                if not published:
+                    continue
+                # Ensure published is a time.struct_time (from feedparser)
+                if not isinstance(published, time.struct_time):
+                    continue
+                try:
+                    # struct_time has at least 9 elements; first 6 are ints
+                    pub_date = datetime(*published[:6])  # type: ignore
+                except (TypeError, ValueError, IndexError):
+                    continue
+                if pub_date < cutoff_date:
+                    continue
+                try:
+                    year, month, day, hour, minute, second = published[:6]
+                    pub_date = datetime(
+                        int(year),
+                        int(month),
+                        int(day),
+                        int(hour),
+                        int(minute),
+                        int(second),
+                    )
+                except (TypeError, ValueError, IndexError):
+                    continue
+                if pub_date < cutoff_date:
+                    continue
+                if pub_date < cutoff_date:
                     continue
 
                 # Simple heuristic to detect funding announcements
-                title = entry.get("title", "").lower()
-                summary = entry.get("summary", entry.get("description", "")).lower()
+                title = str(entry.get("title") or "").lower()
+                summary = str(
+                    entry.get("summary") or entry.get("description") or ""
+                ).lower()
 
                 funding_keywords = ["funding", "raises", "investment", "vc", "venture"]
                 if any(
@@ -63,7 +88,7 @@ class RSSCollector(BaseCollector):
                     announcement = {
                         "id": f"rss_{feed_name}_{entry.get('id', id(entry))}",
                         "source": "rss",
-                        "company_name": entry.get("title", "")[:100],
+                        "company_name": str(entry.get("title") or "")[:100],
                         "company_url": entry.get("link", ""),
                         "funding_amount": None,  # Would need NLP to extract
                         "funding_round": None,
@@ -73,7 +98,7 @@ class RSSCollector(BaseCollector):
                         "stage": "unknown",
                         "metadata": {
                             "feed_name": feed_name,
-                            "summary": entry.get("summary", "")[:500],
+                            "summary": str(entry.get("summary") or "")[:500],
                         },
                     }
                     announcements.append(announcement)
@@ -104,7 +129,7 @@ class RSSCollector(BaseCollector):
 
     def get_investor_details(self, investor_id: str) -> Dict[str, Any]:
         """Not supported for RSS."""
-        return None
+        return {}
 
     def search_investors(self, criteria: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Not supported for RSS."""

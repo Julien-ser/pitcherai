@@ -1,6 +1,6 @@
 """Campaign management module."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from datetime import datetime
 from src.models import Campaign, Outreach
 

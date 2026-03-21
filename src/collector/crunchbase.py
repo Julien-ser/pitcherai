@@ -41,7 +41,7 @@ class CrunchbaseClient(BaseCollector):
                 return self._parse_funding_rounds(data.get("entities", []))
             else:
                 return []
-        except Exception as e:
+        except Exception:
             return []
 
     def _parse_funding_rounds(self, entities: List[Dict]) -> List[Dict[str, Any]]:

@@ -11,7 +11,6 @@ from src.models_db import (
     InvestorDB,
     StartupDB,
     CampaignDB,
-    EmailTemplateDB,
     OutreachDB,
     FundingAnnouncementDB,
 )
@@ -180,7 +179,7 @@ class OutreachRepository:
     def update_status(self, outreach_id: str, status: str, **kwargs) -> OutreachDB:
         """Update outreach status."""
         outreach = self.get_by_id(outreach_id)
-        outreach.status = status
+        setattr(outreach, "status", status)
         for key, value in kwargs.items():
             if hasattr(outreach, key):
                 setattr(outreach, key, value)

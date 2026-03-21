@@ -1,13 +1,12 @@
 """PitcheRai Orchestrator - ties all modules together."""
 
-import asyncio
 import logging
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 from src.config import settings
 from src.database import get_engine
-from src.models import Investor, Startup, Campaign, EmailTemplate, Outreach
+from src.models import Investor, Startup, Campaign, Outreach
 from src.collector import CrunchbaseClient, AngelListClient, RSSCollector
 from src.targeter import TargetFilter, TargetRanker
 from src.drafter import Personalizer, LLMClient
@@ -266,8 +265,6 @@ class PitcheRaiOrchestrator:
         # Get campaign
         if campaign_id not in self.campaign_manager.campaigns:
             raise ValueError(f"Campaign {campaign_id} not found")
-
-        campaign = self.campaign_manager.campaigns[campaign_id]
 
         # Get all outreaches for campaign that are in draft status
         # TODO: Query database instead
