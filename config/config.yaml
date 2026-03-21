@@ -1,0 +1,47 @@
+# PitcherAI Configuration
+
+database:
+  url: "sqlite:///pitcherai.db"
+
+collector:
+  crunchbase_api_key: ""
+  angellist_api_key: ""
+  news_api_key: ""
+  poll_interval_hours: 24
+
+targeter:
+  min_relevance_score: 0.7
+  max_targets_per_run: 100
+  filters:
+    stages: ["seed", "pre-seed", "series-a"]
+    geographies: []
+    min_investment_size: 100000
+
+drafter:
+  openai_model: "gpt-4-turbo-preview"
+  max_tokens: 500
+  temperature: 0.7
+  template_defaults:
+    tone: "professional"
+    length: "medium"
+
+email:
+  gmail_use_oath: true
+  batch_size: 10
+  send_delay_seconds: 2
+
+campaign:
+  default_delay_days: 7
+  max_emails_per_day: 50
+  tracking_enabled: true
+
+dashboard:
+  host: "localhost"
+  port: 8501
+  refresh_interval_seconds: 60
+
+logging:
+  level: "INFO"
+  file: "logs/pitcherai.log"
+  max_bytes: 10485760
+  backup_count: 5
