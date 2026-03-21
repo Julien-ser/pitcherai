@@ -9,9 +9,9 @@ from src.config import settings
 from src.database import get_engine
 from src.models import Investor, Startup, Campaign, EmailTemplate, Outreach
 from src.collector import CrunchbaseClient, AngelListClient, RSSCollector
-from src.targeter import TargetFilter, TargetRanker, ConnectionFinder
+from src.targeter import TargetFilter, TargetRanker
 from src.drafter import Personalizer, LLMClient
-from src.campaign import CampaignManager, Scheduler, EmailSender, ResponseTracker
+from src.campaign import CampaignManager, EmailSender, ResponseTracker
 from src.email import GmailClient
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class PitcheRaiOrchestrator:
         self.db_engine = None
         self.db_session = None
         self.campaign_manager = CampaignManager()
-        self.scheduler = Scheduler(rate_limit=settings.email_rate_limit)
+
         self.gmail_client = GmailClient()
         self.email_sender = EmailSender(self.gmail_client, settings.email_rate_limit)
         self.response_tracker = ResponseTracker(self.gmail_client)
@@ -38,7 +38,6 @@ class PitcheRaiOrchestrator:
             "rss": RSSCollector(),
         }
         self.ranker = TargetRanker()
-        self.connection_finder = ConnectionFinder()
 
     async def initialize(self):
         """Initialize database and external services."""
@@ -182,8 +181,8 @@ class PitcheRaiOrchestrator:
         self,
         startup: Startup,
         investors: List[Investor],
-        name: str = None,
-        target_criteria: Dict = None,
+        name: Optional[str] = None,
+        target_criteria: Optional[Dict] = None,
     ) -> Campaign:
         """Create a campaign with drafted emails for each investor."""
         campaign_name = (
@@ -348,7 +347,9 @@ class PitcheRaiOrchestrator:
             "total_replied": 0,
         }
 
-    def get_investor_list(self, search: str = None, limit: int = 100) -> List[Dict]:
+    def get_investor_list(
+        self, search: Optional[str] = None, limit: int = 100
+    ) -> List[Dict]:
         """Get list of investors with optional search."""
         # This would query the database
         return []
