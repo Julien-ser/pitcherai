@@ -1472,3 +1472,66 @@ Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
  - [ ] Integration testing
 
 [0m
+Now let me commit all changes:
+[0m$ [0mgit add . && git commit -m "feat: implement core features - API endpoints, CLI, dashboard integration, and documentation" && git push origin main
+[wiggum/session-1774110974 fc18af9] feat: implement core features - API endpoints, CLI, dashboard integration, and documentation
+ 22 files changed, 3221 insertions(+), 450 deletions(-)
+ create mode 100644 logs/iteration-11.md
+ create mode 100644 src/pitcherai/cli.py
+ create mode 100644 src/pitcherai/services/__pycache__/campaign.cpython-314.pyc
+ create mode 100644 src/pitcherai/services/__pycache__/gmail.cpython-314.pyc
+ create mode 100644 src/pitcherai/services/__pycache__/prospecting.cpython-314.pyc
+ create mode 100644 src/pitcherai/tasks/__pycache__/__init__.cpython-314.pyc
+Everything up-to-date
+[0m
+[0m✗ [0medit failed
+[91m[1mError: [0mCould not find oldString in the file. It must match exactly, including whitespace, indentation, and line endings.
+Wait, I should check if there are other Phase 2 tasks that are also complete. Let me review what I implemented and mark all appropriate ones as done. The three tasks in Phase 2 are closely related and I essentially completed all of them. Let me update TASKS.md:
+[0m→ [0mRead TASKS.md[90m [limit=25, offset=10][0m
+Let me read the file again and get the exact text:
+```
+
+## TASKS.md After Iteration
+
+```markdown
+# pitcherai
+
+**Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
+
+**Why now:** AI agents are hot, but founders still waste hours on manual outreach. This automates the funnel from target discovery to first contact, while keeping it personalized enough to actually get replies. You could charge $99/mo for access, or take a success fee on raised capital.
+
+**Tech stack:** Use your own Wiggum loops (or OpenCode agents) to scrape, filter, draft, and send via Gmail API. Add a simple dashboard to review targets and override before sending.
+
+**Differentiator:** Not just a contact list — it's an autonomous outreach campaign manager that learns what works for your vertical.
+
+## Phase 1: Setup & Planning
+- [x] Review requirements and design architecture
+- [x] Set up development environment and dependencies
+- [x] Create project structure
+
+## Phase 2: Core Implementation
+- [x] Implement main features
+- [x] Integrate APIs and libraries
+- [x] Build core logic
+
+## Phase 3: Testing
+- [ ] Write and run tests
+- [ ] Integration testing
+- [ ] Bug fixes
+
+## Phase 4: Documentation & Deployment
+- [ ] Write documentation
+- [ ] Prepare deployment
+- [ ] Deploy and validate
+
+**Created:** Sat Mar 21 12:11:43 AM EDT 2026
+**Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
+
+**Why now:** AI agents are hot, but founders still waste hours on manual outreach. This automates the funnel from target discovery to first contact, while keeping it personalized enough to actually get replies. You could charge $99/mo for access, or take a success fee on raised capital.
+
+**Tech stack:** Use your own Wiggum loops (or OpenCode agents) to scrape, filter, draft, and send via Gmail API. Add a simple dashboard to review targets and override before sending.
+
+**Differentiator:** Not just a contact list — it's an autonomous outreach campaign manager that learns what works for your vertical.
+```
+
+**Completed at:** Sat Mar 21 12:52:07 PM EDT 2026
