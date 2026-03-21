@@ -2,7 +2,9 @@
 """Seed database with sample data."""
 
 import sys
+
 from sqlalchemy import create_engine, text
+
 from src.config import settings
 
 
@@ -66,13 +68,16 @@ def seed_database():
         for inv in investors:
             conn.execute(
                 text("""
-                INSERT INTO investors (id, name, email, firm, focus_areas, stage_preference,
-                                       portfolio, recent_investments, connections, check_size_min,
-                                       check_size_max, website)
-                VALUES (:id, :name, :email, :firm, :focus_areas, :stage_preference,
-                        :portfolio, :recent_investments, :connections, :check_size_min,
-                        :check_size_max, :website)
-            """),
+                    INSERT INTO investors (
+                        id, name, email, firm, focus_areas,
+                        stage_preference, portfolio, recent_investments,
+                        connections, check_size_min, check_size_max, website
+                    ) VALUES (
+                        :id, :name, :email, :firm, :focus_areas,
+                        :stage_preference, :portfolio, :recent_investments,
+                        :connections, :check_size_min, :check_size_max, :website
+                    )
+                """),
                 {
                     "id": inv[0],
                     "name": inv[1],
@@ -92,11 +97,15 @@ def seed_database():
         # Insert sample startup
         conn.execute(
             text("""
-            INSERT INTO startups (id, name, industry, stage, description, funding_needed, website, founders)
-            VALUES ('startup_001', 'AI-Pitched', 'AI', 'seed',
-                    'AI-powered fundraising outreach automation for startups', 2000000,
-                    'https://pitcherai.example.com', ARRAY['Founder 1', 'Founder 2'])
-        """)
+                INSERT INTO startups (
+                    id, name, industry, stage, description,
+                    funding_needed, website, founders
+                ) VALUES (
+                    'startup_001', 'AI-Pitched', 'AI', 'seed',
+                    'AI-powered fundraising outreach automation for startups',
+                    2000000, 'https://aipitched.com', '["Alice","Bob"]'
+                )
+            """),
         )
 
         conn.commit()

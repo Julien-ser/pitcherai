@@ -1,7 +1,7 @@
 """Configuration management using Pydantic Settings."""
 
+
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -22,10 +22,10 @@ class Settings(BaseSettings):
     default_model: str = "anthropic/claude-3.5-sonnet"
 
     # External APIs
-    crunchbase_api_key: Optional[str] = None
-    angellist_access_token: Optional[str] = None
-    linkedin_client_id: Optional[str] = None
-    linkedin_client_secret: Optional[str] = None
+    crunchbase_api_key: str | None = None
+    angellist_access_token: str | None = None
+    linkedin_client_id: str | None = None
+    linkedin_client_secret: str | None = None
 
     # App Settings
     secret_key: str = "change-this-in-production"

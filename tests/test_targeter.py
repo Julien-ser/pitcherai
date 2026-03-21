@@ -1,6 +1,7 @@
 """Tests for target filtering."""
 
 import pytest
+
 from src.models import Investor, Startup
 from src.targeter import TargetFilter
 

@@ -1,14 +1,14 @@
 """Gmail integration and email tracking."""
 
-from typing import List, Dict, Any
-from src.models import Outreach, Investor
-from datetime import datetime
+from typing import Any
+
+from src.models import Outreach
 
 
 class GmailClient:
     """Gmail API client for sending and tracking emails."""
 
-    def __init__(self, credentials: Dict[str, str]):
+    def __init__(self, credentials: dict[str, str]):
         self.credentials = credentials
         self.service = None
 
@@ -18,7 +18,7 @@ class GmailClient:
 
     async def send_email(
         self, to: str, subject: str, body: str, thread_id: str = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Send an email via Gmail API."""
         raise NotImplementedError("Email sending pending implementation")
 
@@ -26,7 +26,7 @@ class GmailClient:
         """Track if an email was opened."""
         raise NotImplementedError("Open tracking pending implementation")
 
-    async def check_replies(self, message_id: str) -> List[Dict[str, Any]]:
+    async def check_replies(self, message_id: str) -> list[dict[str, Any]]:
         """Check for replies to sent messages."""
         raise NotImplementedError("Reply checking pending implementation")
 
@@ -37,7 +37,7 @@ class EmailSender:
     def __init__(self, gmail_client: GmailClient, rate_limit: int = 10):
         self.gmail_client = gmail_client
         self.rate_limit = rate_limit
-        self.send_queue: List[Outreach] = []
+        self.send_queue: list[Outreach] = []
 
     def queue_email(self, outreach: Outreach):
         """Add email to send queue."""

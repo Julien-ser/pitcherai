@@ -1,8 +1,6 @@
 """Tests for data models."""
 
-import pytest
-from datetime import datetime
-from src.models import Investor, Startup, EmailTemplate, Outreach, Campaign
+from src.models import EmailTemplate, Investor, Outreach, Startup
 
 
 def test_investor_creation():

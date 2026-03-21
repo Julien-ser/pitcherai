@@ -1,18 +1,19 @@
 """Campaign orchestration and management."""
 
-from typing import List, Dict, Any
-from datetime import datetime, timedelta
-from src.models import Campaign, Outreach, Startup, Investor, EmailTemplate
+from datetime import datetime
+from typing import Any
+
+from src.models import Campaign, EmailTemplate, Investor, Outreach, Startup
 
 
 class CampaignManager:
     """Manage outreach campaigns end-to-end."""
 
     def __init__(self):
-        self.campaigns: Dict[str, Campaign] = {}
+        self.campaigns: dict[str, Campaign] = {}
 
     def create_campaign(
-        self, startup: Startup, target_criteria: Dict[str, Any], name: str
+        self, startup: Startup, target_criteria: dict[str, Any], name: str
     ) -> Campaign:
         """Create a new outreach campaign."""
         campaign_id = f"camp_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
@@ -26,7 +27,7 @@ class CampaignManager:
         self.campaigns[campaign_id] = campaign
         return campaign
 
-    def add_targets(self, campaign_id: str, investors: List[Investor]):
+    def add_targets(self, campaign_id: str, investors: list[Investor]):
         """Add target investors to campaign."""
         if campaign_id in self.campaigns:
             self.campaigns[campaign_id].targets = [inv.id for inv in investors]
@@ -48,7 +49,7 @@ class CampaignManager:
             self.campaigns[campaign_id].status = "completed"
             self.campaigns[campaign_id].completed_at = datetime.utcnow()
 
-    def get_campaign_metrics(self, campaign_id: str) -> Dict[str, Any]:
+    def get_campaign_metrics(self, campaign_id: str) -> dict[str, Any]:
         """Calculate campaign metrics."""
         raise NotImplementedError("Metrics calculation pending implementation")
 
@@ -58,13 +59,13 @@ class Scheduler:
 
     def __init__(self, rate_limit: int = 10):
         self.rate_limit = rate_limit  # emails per minute
-        self.queue: List[Outreach] = []
+        self.queue: list[Outreach] = []
 
     def schedule_outreach(self, outreach: Outreach):
         """Add outreach to send queue."""
         self.queue.append(outreach)
 
-    def get_next_batch(self, batch_size: int) -> List[Outreach]:
+    def get_next_batch(self, batch_size: int) -> list[Outreach]:
         """Get next batch of emails to send."""
         batch = self.queue[:batch_size]
         self.queue = self.queue[batch_size:]
@@ -90,7 +91,7 @@ class MetricsTracker:
         """Record a reply and its type."""
         raise NotImplementedError("Reply tracking pending implementation")
 
-    def get_campaign_stats(self, campaign_id: str) -> Dict[str, Any]:
+    def get_campaign_stats(self, campaign_id: str) -> dict[str, Any]:
         """Get statistics for a campaign."""
         raise NotImplementedError("Stats calculation pending implementation")
 

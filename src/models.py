@@ -1,7 +1,7 @@
 """Core Pydantic data models for PitcheRai."""
 
 from datetime import datetime
-from typing import List, Optional
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -12,15 +12,15 @@ class Investor(BaseModel):
     name: str
     email: EmailStr
     firm: str
-    focus_areas: List[str] = Field(default_factory=list)
-    stage_preference: List[str] = Field(default_factory=list)
-    portfolio: List[str] = Field(default_factory=list)  # Company names
-    recent_investments: List[str] = Field(default_factory=list)
-    connections: List[str] = Field(default_factory=list)  # Shared connections
-    location: Optional[str] = None
-    check_size_min: Optional[float] = None
-    check_size_max: Optional[float] = None
-    website: Optional[str] = None
+    focus_areas: list[str] = Field(default_factory=list)
+    stage_preference: list[str] = Field(default_factory=list)
+    portfolio: list[str] = Field(default_factory=list)  # Company names
+    recent_investments: list[str] = Field(default_factory=list)
+    connections: list[str] = Field(default_factory=list)  # Shared connections
+    location: str | None = None
+    check_size_min: float | None = None
+    check_size_max: float | None = None
+    website: str | None = None
 
 
 class Startup(BaseModel):
@@ -32,9 +32,9 @@ class Startup(BaseModel):
     stage: str  # pre-seed, seed, series-a, etc.
     description: str
     funding_needed: float
-    location: Optional[str] = None
-    website: Optional[str] = None
-    founders: List[str] = Field(default_factory=list)
+    location: str | None = None
+    website: str | None = None
+    founders: list[str] = Field(default_factory=list)
 
 
 class EmailTemplate(BaseModel):
@@ -55,13 +55,13 @@ class Outreach(BaseModel):
     id: str
     campaign_id: str
     investor_id: str
-    template_id: Optional[str] = None
+    template_id: str | None = None
     subject: str
     body: str
-    sent_at: Optional[datetime] = None
+    sent_at: datetime | None = None
     status: str = "draft"  # draft, queued, sent, opened, replied, bounced
-    response: Optional[str] = None
-    response_type: Optional[str] = None  # interested, not_interested, maybe_later
+    response: str | None = None
+    response_type: str | None = None  # interested, not_interested, maybe_later
     overridden: bool = False  # manually edited by user
 
 
@@ -74,7 +74,7 @@ class Campaign(BaseModel):
     target_criteria: dict  # filters for investor selection
     status: str = "draft"  # draft, active, paused, completed
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    targets: List[str] = Field(default_factory=list)  # investor_ids
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    targets: list[str] = Field(default_factory=list)  # investor_ids
     metrics: dict = Field(default_factory=dict)  # sent, opened, replied, etc.

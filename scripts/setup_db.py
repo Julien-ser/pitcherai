@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Setup database tables."""
 
-import asyncio
 import sys
+
 from sqlalchemy import create_engine, text
+
 from src.config import settings
 
 
@@ -119,17 +120,20 @@ def setup_database():
         )
         conn.execute(
             text(
-                "CREATE INDEX IF NOT EXISTS idx_outreaches_campaign ON outreaches(campaign_id);"
+                "CREATE INDEX IF NOT EXISTS idx_outreaches_campaign "
+                "ON outreaches(campaign_id);"
             )
         )
         conn.execute(
             text(
-                "CREATE INDEX IF NOT EXISTS idx_outreaches_status ON outreaches(status);"
+                "CREATE INDEX IF NOT EXISTS idx_outreaches_status "
+                "ON outreaches(status);"
             )
         )
         conn.execute(
             text(
-                "CREATE INDEX IF NOT EXISTS idx_outreaches_sent_at ON outreaches(sent_at);"
+                "CREATE INDEX IF NOT EXISTS idx_outreaches_sent_at "
+                "ON outreaches(sent_at);"
             )
         )
 
