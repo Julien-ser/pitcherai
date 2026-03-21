@@ -41,12 +41,11 @@ Founders waste hours on manual outreach. PitcheRai automates the entire funnel f
 ### Installation
 
 1. **Clone and setup**
-   ```bash
-   cd pitcherai
-   python -m venv .venv
-   source .venv/bin/activate  # or .venv\Scripts\activate on Windows
-   pip install -r requirements.txt
-   ```
+    ```bash
+    cd pitcherai
+    pip install -e .[dev]
+    ```
+    This uses system Python directly (no virtual environment required).
 
 2. **Configure environment**
    ```bash
@@ -153,7 +152,7 @@ Current phase: Phase 1 - Setup & Planning
 
 Key tasks:
 - [x] Review requirements and design architecture
-- [ ] Set up development environment and dependencies
+- [x] Set up development environment and dependencies
 - [ ] Create project structure
 - [ ] Implement main features (Phase 2)
 - [ ] Write and run tests (Phase 3)
