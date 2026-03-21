@@ -2269,3 +2269,59 @@ ERROR [226:16] Type "Sequence[Campaign]" is not assignable to return type "List[
 </diagnostics>
 [0m
 📝 Log saved: logs/iteration-12.md
+📊 Token Usage: 5750 / Session: 46250 / 64000
+Unstaged changes after reset:
+M	logs/worker-session-20260321-123614.log
+✅ Changes committed
+To https://github.com/Julien-ser/pitcherai.git
+   5e625bc..1a1144d  wiggum/session-1774110974 -> wiggum/session-1774110974
+✅ Pushed to GitHub (branch: wiggum/session-1774110974)
+📊 Updated Tasks: 6/12 completed, 6 remaining
+   Next task: Write and run tests...
+📍 Iteration 13 at Sat Mar 21 12:53:46 PM EDT 2026...
+✓ Progress: Git commit found
+📊 Task attempt 2: Progress detected, continuing...
+📚 Loading context from previous iteration attempts...
+   Found context in: iteration-12.md
+🤖 OpenCode processing: Write and run tests
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+I'll continue with writing and running tests for the pitcherai project. Let me explore the codebase structure and understand what needs to be tested.
+[0m→ [0mRead README.md
+[0m→ [0mRead TASKS.md
+[0m→ [0mRead pyproject.toml
+Now let me explore the source code structure to understand what needs to be tested:
+[0m✱ [0mGlob "**/*.py"[90m in src · 14 matches[0m
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/
+total 24
+drwxr-xr-x  4 julien julien 4096 Mar 21 12:53 .
+drwxr-xr-x 12 julien julien 4096 Mar 21 12:42 ..
+-rw-r--r--  1 julien julien 6605 Mar 21 12:53 conftest.py
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 integration
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 unit
+[0m
+Let me check what's already in the tests directory:
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/ && ls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/integration/
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 10:49 .
+drwxr-xr-x 4 julien julien 4096 Mar 21 12:53 ..
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 10:49 .
+drwxr-xr-x 4 julien julien 4096 Mar 21 12:53 ..
+[0m
+[0m→ [0mRead tests/conftest.py
+Now let me read the core source files to understand what to test:
+[0m→ [0mRead src/pitcherai/models.py
+[0m→ [0mRead src/pitcherai/schemas.py
+[0m→ [0mRead src/pitcherai/services/email_generation.py
+[0m→ [0mRead src/pitcherai/services/prospecting.py
+[0m→ [0mRead src/pitcherai/services/campaign.py
+Let me read the remaining important files:
+[0m→ [0mRead src/pitcherai/config.py
+[0m→ [0mRead src/pitcherai/crud.py
+Now let me check the API structure:
+[0m→ [0mRead src/pitcherai/main.py
+[0m✱ [0mGlob "**/*.py"[90m in src/pitcherai/api · 0 matches[0m
+📝 Log saved: logs/iteration-13.md
