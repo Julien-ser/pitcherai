@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class CrunchbaseCollector:
     """Collect funding data from Crunchbase API."""
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key
         # Mock data for demo when API key not provided
         self.mock_investors = [
@@ -108,7 +108,7 @@ class CrunchbaseCollector:
 class AngelListCollector:
     """Collect funding data from AngelList."""
 
-    def __init__(self, access_token: str = None):
+    def __init__(self, access_token: Optional[str] = None):
         self.access_token = access_token
         self.mock_startups = [
             {
@@ -247,7 +247,7 @@ class AngelListCollector:
 class RSSFeedCollector:
     """Monitor RSS feeds for funding news."""
 
-    def __init__(self, feed_urls: List[str] = None):
+    def __init__(self, feed_urls: Optional[List[str]] = None):
         self.feed_urls = feed_urls or [
             "https://techcrunch.com/feed/",
             "https://feeds.feedburner.com/venturebeat/tech",
@@ -276,15 +276,15 @@ class RSSFeedCollector:
                     # Parse publication date
                     published = None
                     if hasattr(entry, "published_parsed") and entry.published_parsed:
-                        published = datetime(*entry.published_parsed[:6])
+                        published = datetime(*entry.published_parsed[:6])  # type: ignore
                     elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
-                        published = datetime(*entry.updated_parsed[:6])
+                        published = datetime(*entry.updated_parsed[:6])  # type: ignore
 
                     if published and published < cutoff_date:
                         continue  # Too old
 
-                    title = entry.get("title", "").lower()
-                    summary = entry.get("summary", "").lower()
+                    title = str(entry.get("title", "")).lower()
+                    summary = str(entry.get("summary", "")).lower()
                     content = title + " " + summary
 
                     # Detect funding announcements
@@ -304,11 +304,11 @@ class RSSFeedCollector:
                             "link": entry.get("link", ""),
                             "published": published.isoformat() if published else None,
                             "summary": entry.get("summary", ""),
-                            "source": feed.feed.get("title", "Unknown"),
+                            "source": str(feed.feed.get("title", "Unknown")),  # type: ignore
                             "company_name": self._extract_company_name(
-                                entry.get("title", "")
+                                str(entry.get("title", ""))
                             ),
-                            "amount": self._extract_amount(entry.get("summary", "")),
+                            "amount": self._extract_amount(str(entry.get("summary", ""))),
                         }
                         announcements.append(announcement)
 

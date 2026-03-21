@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class CrunchbaseClient:
     """Client for Crunchbase API."""
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key
         self.base_url = "https://api.crunchbase.com/v3"
         # Mock data for demo when API key not provided

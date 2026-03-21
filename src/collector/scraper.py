@@ -3,6 +3,7 @@
 import logging
 from typing import List, Dict, Any, Optional
 import re
+from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +20,12 @@ except ImportError:
 class WebScraper:
     """Scrape funding data from websites."""
 
-    def __init__(self, user_agent: str = None):
+    def __init__(self, user_agent: Optional[str] = None):
         if not HAS_SCRAPING_LIBS:
             raise ImportError(
                 "Install 'requests' and 'beautifulsoup4' to use WebScraper"
             )
-        self.session = requests.Session()
+        self.session = requests.Session()  # type: ignore
         if user_agent:
             self.session.headers["User-Agent"] = user_agent
         else:
@@ -33,13 +34,13 @@ class WebScraper:
             )
 
     def scrape_news_site(
-        self, url: str, selectors: Dict[str, str] = None
+        self, url: str, selectors: Optional[Dict[str, str]] = None
     ) -> Dict[str, Any]:
         """Scrape a single news page looking for funding announcements."""
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = BeautifulSoup(response.text, "html.parser")  # type: ignore
 
             data = {
                 "url": url,
@@ -81,7 +82,7 @@ class WebScraper:
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = BeautifulSoup(response.text, "html.parser")  # type: ignore
 
             for article in soup.select(article_selector):
                 try:
@@ -90,11 +91,7 @@ class WebScraper:
                     excerpt_elem = article.select_one(".excerpt, .summary, p")
 
                     title = title_elem.get_text(strip=True) if title_elem else ""
-                    link = (
-                        link_elem["href"]
-                        if link_elem and link_elem.has_attr("href")
-                        else url
-                    )
+                    link = str(link_elem["href"]) if link_elem and link_elem.has_attr("href") else url
                     excerpt = excerpt_elem.get_text(strip=True) if excerpt_elem else ""
 
                     # Make link absolute if relative

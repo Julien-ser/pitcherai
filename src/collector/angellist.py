@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class AngelListClient:
     """Client for AngelList API."""
 
-    def __init__(self, access_token: str = None):
+    def __init__(self, access_token: Optional[str] = None):
         self.access_token = access_token
         self.base_url = "https://api.angel.co/1"
         # Mock data for demo

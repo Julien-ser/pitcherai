@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class RSSCollector:
     """Collect funding news from RSS feeds."""
 
-    def __init__(self, feed_urls: List[str] = None):
+    def __init__(self, feed_urls: Optional[List[str]] = None):
         self.feed_urls = feed_urls or [
             "https://techcrunch.com/feed/",
             "https://feeds.feedburner.com/venturebeat/tech",
@@ -32,15 +32,15 @@ class RSSCollector:
                     # Parse publication date
                     published = None
                     if hasattr(entry, "published_parsed") and entry.published_parsed:
-                        published = datetime(*entry.published_parsed[:6])
+                        published = datetime(*entry.published_parsed[:6])  # type: ignore
                     elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
-                        published = datetime(*entry.updated_parsed[:6])
+                        published = datetime(*entry.updated_parsed[:6])  # type: ignore
 
                     if published and published < cutoff_date:
                         continue  # Too old
 
-                    title = entry.get("title", "").lower()
-                    summary = entry.get("summary", "").lower()
+                    title = str(entry.get("title", "")).lower()
+                    summary = str(entry.get("summary", "")).lower()
                     content = title + " " + summary
 
                     # Detect funding announcements with keywords
@@ -60,11 +60,11 @@ class RSSCollector:
                             "link": entry.get("link", ""),
                             "published": published.isoformat() if published else None,
                             "summary": entry.get("summary", ""),
-                            "source": feed.feed.get("title", "Unknown"),
+                            "source": str(feed.feed.get("title", "Unknown")),  # type: ignore
                             "company_name": self._extract_company_name(
-                                entry.get("title", "")
+                                str(entry.get("title", ""))
                             ),
-                            "amount": self._extract_amount(entry.get("summary", "")),
+                            "amount": self._extract_amount(str(entry.get("summary", ""))),
                         }
                         announcements.append(announcement)
 
