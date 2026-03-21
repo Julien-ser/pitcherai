@@ -71,5 +71,9 @@ investors = CRUDBase(models_db.InvestorDB)
 startups = CRUDBase(models_db.StartupDB)
 email_templates = CRUDBase(models_db.EmailTemplateDB)
 outreaches = CRUDBase(models_db.OutreachDB)
-campaigns = CRUDBase(models_db.CampaignDB)\n\n# Placeholder for database session\ndb = None
+campaigns = CRUDBase(models_db.CampaignDB)
+
+
+# Placeholder for database session
+db = None
 db = None
