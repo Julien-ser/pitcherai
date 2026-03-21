@@ -814,3 +814,243 @@ ERROR [28:23] Return type of async generator function must be compatible with "A
 </diagnostics>
 [0m
 📝 Log saved: logs/iteration-9.md
+📊 Token Usage: 10750 / Session: 17750 / 64000
+Unstaged changes after reset:
+M	logs/worker-session-20260321-123614.log
+✅ Changes committed
+To https://github.com/Julien-ser/pitcherai.git
+   9bc81c4..9bec971  wiggum/session-1774110974 -> wiggum/session-1774110974
+✅ Pushed to GitHub (branch: wiggum/session-1774110974)
+📊 Updated Tasks: 3/12 completed, 9 remaining
+   Next task: Implement main features...
+📍 Iteration 10 at Sat Mar 21 12:42:35 PM EDT 2026...
+✓ Progress: Git commit found
+📊 Task attempt 3: Progress detected, continuing...
+📚 Loading context from previous iteration attempts...
+   Found context in: iteration-9.md
+🤖 OpenCode processing: Implement main features
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+I'll continue implementing the main features for pitcherai. Let me first check the current state and understand what we've built so far.
+[0m→ [0mRead pyproject.toml
+[0m→ [0mRead .agent_role
+[0m→ [0mRead TASKS.md
+[0m→ [0mRead README.md
+Now let me check what's already been implemented in the source files:
+[0m→ [0mRead src/pitcherai/main.py
+[0m→ [0mRead src/pitcherai/models.py
+[0m→ [0mRead src/pitcherai/schemas.py
+[0m→ [0mRead src/pitcherai/crud.py
+[0m→ [0mRead src/pitcherai/services/email_generation.py
+[0m→ [0mRead src/pitcherai/services/campaign.py
+[0m✱ [0mGlob "src/pitcherai/**/*.py"[90m 13 matches[0m
+Let me check the remaining important files:
+[0m→ [0mRead src/pitcherai/database.py
+[0m→ [0mRead src/pitcherai/config.py
+[0m→ [0mRead src/pitcherai/services/gmail.py
+[0m→ [0mRead src/pitcherai/services/prospecting.py
+[0m→ [0mRead src/pitcherai/dashboard/app.py
+[0m→ [0mRead src/pitcherai/tasks/__init__.py
+[0m→ [0mRead src/pitcherai/__init__.py
+[0m✱ [0mGlob "tests/**/*.py"[90m 0 matches[0m
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/
+total 676
+drwxr-xr-x 12 julien julien   4096 Mar 21 12:42 .
+drwxr-xr-x 30 julien julien   4096 Mar 21 00:10 ..
+-rw-r--r--  1 julien julien      8 Mar 21 12:36 .agent_role
+-rw-r--r--  1 julien julien  10447 Mar 21 12:16 ARCHITECTURE.md
+-rw-r--r--  1 julien julien  53248 Mar 21 12:23 .coverage
+drwxr-xr-x  2 julien julien   4096 Mar 21 10:49 data
+-rw-r--r--  1 julien julien    768 Mar 21 12:40 .env.example
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:42 .git
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:10 .github
+-rw-r--r--  1 julien julien      4 Mar 21 10:38 .gitignore
+drwxr-xr-x  2 julien julien   4096 Mar 21 12:23 htmlcov
+drwxr-xr-x  2 julien julien   4096 Mar 21 12:42 logs
+-rw-r--r--  1 julien julien   9218 Mar 21 00:10 prompt.txt
+-rw-r--r--  1 julien julien   2002 Mar 21 12:16 pyproject.toml
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:17 .pytest_cache
+-rw-r--r--  1 julien julien   6396 Mar 21 12:19 README.md
+drwxr-xr-x  4 julien julien   4096 Mar 21 01:07 .ruff_cache
+drwxr-xr-x  3 julien julien   4096 Mar 21 12:16 src
+-rw-r--r--  1 julien julien   2595 Mar 21 12:25 TASKS.md
+-rw-r--r--  1 julien julien   2595 Mar 21 12:36 TASKS_original.md
+-rw-r--r--  1 julien julien     95 Mar 21 12:42 tasks.py
+drwxr-xr-x  4 julien julien   4096 Mar 21 12:14 tests
+-rw-r--r--  1 julien julien 521433 Mar 21 12:22 uv.lock
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:23 .venv
+-rw-r--r--  1 julien julien      6 Mar 21 12:36 .worker_persistent_mode
+[0m
+Let me also check if there are any existing tests and look for what needs to be done:
+[0m→ [0mRead .env.example
+[0m→ [0mRead ARCHITECTURE.md
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/
+total 16
+drwxr-xr-x  4 julien julien 4096 Mar 21 12:14 .
+drwxr-xr-x 12 julien julien 4096 Mar 21 12:42 ..
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 integration
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 unit
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/integration/
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/integration/:
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 10:49 .
+drwxr-xr-x 4 julien julien 4096 Mar 21 12:14 ..
+
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/:
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 10:49 .
+drwxr-xr-x 4 julien julien 4096 Mar 21 12:14 ..
+[0m
+Let me check what's in that tasks.py file at the root and examine any potential issues:
+[0m→ [0mRead tasks.py
+[0m
+[0m$ [0mpython3 -c "import sys; sys.path.insert(0, 'src'); from pitcherai import main; print('Import successful')" 2>&1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys; sys.path.insert(0, 'src'); from pitcherai import main; print('Import successful')
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/main.py", line 12, in <module>
+    from . import crud
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py", line 9, in <module>
+    from .models import (
+    ...<9 lines>...
+    )
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py", line 104, in <module>
+    class SharedConnection(Base, TimestampMixin):
+    ...<16 lines>...
+        )
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py", line 119, in SharedConnection
+    investor: Mapped["Investor"] = relationship(
+                                   ~~~~~~~~~~~~^
+        "Investor", back_populates="shared_connections"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+TypeError: 'MappedColumn' object is not callable
+[0m
+There's a critical error in models.py. Let me examine it more carefully:
+[0m→ [0mRead src/pitcherai/models.py[90m [limit=30, offset=100][0m
+[0m
+[0m# [0mTodos
+[ ] Fix models.py - rename 'relationship' field to avoid shadowing
+[ ] Add missing CLI entry point (cli.py)
+[ ] Fix SQLAlchemy 2.0 async query syntax in campaign.py (replace query() with select())
+[ ] Add prospecting API endpoints to main.py
+[ ] Write unit tests for core components
+[ ] Write integration tests
+[ ] Fix any import/runtime issues
+[ ] Run linting and type checking
+[ ] Update TASKS.md to mark task complete
+[0m
+I found the bug! In models.py, line 116 defines a column named `relationship` which shadows the `relationship` function from SQLAlchemy. This breaks the relationship definition on line 119.
+
+Let me create a todo list to track the work needed:
+Now let me fix the critical bug first. I'll rename the `relationship` field to `relationship_type` to avoid shadowing:
+[0m← [0mEdit src/pitcherai/models.py
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py
+@@ -112,9 +112,9 @@
+     ForeignKey("investors.id"), nullable=False
+ )
+ connection_name: Mapped[str] = mapped_column(String(255), nullable=False)
+ connection_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+-relationship: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
++relationship_type: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+ 
+ # Relationships
+ investor: Mapped["Investor"] = relationship(
+     "Investor", back_populates="shared_connections"
+
+[0m
+[0m$ [0mpython3 -c "import sys; sys.path.insert(0, 'src'); from pitcherai import main; print('Import successful')" 2>&1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys; sys.path.insert(0, 'src'); from pitcherai import main; print('Import successful')
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/main.py", line 14, in <module>
+    from .services.email_generation import email_generator
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py", line 6, in <module>
+    from .config import settings
+ModuleNotFoundError: No module named 'pitcherai.services.config'
+[0m
+There are import errors. The services modules are trying to import config incorrectly. They're in the `services` subdirectory so they need `from ..config import settings` not `from .config import settings`.
+
+Let me fix the import in email_generation.py:
+[0m← [0mEdit src/pitcherai/services/email_generation.py
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py
+@@ -2,9 +2,9 @@
+ 
+ import os
+ from typing import Optional, Dict, Any
+ from openai import AsyncOpenAI
+-from .config import settings
++from ..config import settings
+ 
+ 
+ class EmailGenerationService:
+     """Service for generating personalized emails using AI."""
+
+[0m
+Let me check the other service files for similar import issues and fix them all at once:
+[0m✱ [0mGrep "from \.config import"[90m in src/pitcherai/services · 0 matches[0m
+[0m
+[0m$ [0mgrep -n "from .config import settings" src/pitcherai/services/*.py src/pitcherai/tasks/__init__.py 2>&1
+Let me read the current state of email_generation.py:
+[0m→ [0mRead src/pitcherai/services/email_generation.py[90m [limit=20][0m
+[0m
+[0m$ [0mpython3 -c "import sys; sys.path.insert(0, 'src'); from pitcherai import main; print('Import successful')" 2>&1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys; sys.path.insert(0, 'src'); from pitcherai import main; print('Import successful')
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/main.py", line 14, in <module>
+    from .services.email_generation import email_generator
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py", line 190, in <module>
+    email_generator = EmailGenerationService()
+  File "/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py", line 13, in __init__
+    self.client = AsyncOpenAI(api_key=settings.openai_api_key)
+                  ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/julien/Desktop/Free-Wiggum-opencode/venv/lib/python3.14/site-packages/openai/_client.py", line 514, in __init__
+    raise OpenAIError(
+        "The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable"
+    )
+openai.OpenAIError: The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable
+[0m
+The OpenAI client is being instantiated at module import time. I need to make it lazy so the module can be imported without an API key. Let me refactor the email_generation.py:
+[0m← [0mEdit src/pitcherai/services/email_generation.py
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py
+@@ -9,11 +9,18 @@
+ class EmailGenerationService:
+     """Service for generating personalized emails using AI."""
+ 
+     def __init__(self):
+-        self.client = AsyncOpenAI(api_key=settings.openai_api_key)
++        self._client = None
+         self.model = settings.openai_model
+ 
++    @property
++    def client(self):
++        """Lazy initialization of OpenAI client."""
++        if self._client is None and settings.openai_api_key:
++            self._client = AsyncOpenAI(api_key=settings.openai_api_key)
++        return self._client
++
+     async def generate_email(
+         self,
+         investor_name: str,
+         investor_firm: Optional[str],
+
+[0m
+📝 Log saved: logs/iteration-10.md

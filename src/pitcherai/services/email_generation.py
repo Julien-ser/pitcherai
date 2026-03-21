@@ -3,15 +3,22 @@
 import os
 from typing import Optional, Dict, Any
 from openai import AsyncOpenAI
-from .config import settings
+from ..config import settings
 
 
 class EmailGenerationService:
     """Service for generating personalized emails using AI."""
 
     def __init__(self):
-        self.client = AsyncOpenAI(api_key=settings.openai_api_key)
+        self._client = None
         self.model = settings.openai_model
+
+    @property
+    def client(self):
+        """Lazy initialization of OpenAI client."""
+        if self._client is None and settings.openai_api_key:
+            self._client = AsyncOpenAI(api_key=settings.openai_api_key)
+        return self._client
 
     async def generate_email(
         self,

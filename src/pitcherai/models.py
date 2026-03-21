@@ -113,7 +113,7 @@ class SharedConnection(Base, TimestampMixin):
     )
     connection_name: Mapped[str] = mapped_column(String(255), nullable=False)
     connection_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    relationship: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    relationship_type: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     # Relationships
     investor: Mapped["Investor"] = relationship(
