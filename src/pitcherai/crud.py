@@ -1,6 +1,6 @@
 """CRUD operations for all models."""
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List, Any
 from uuid import UUID
