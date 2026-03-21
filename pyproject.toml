@@ -1,3 +1,87 @@
+[project]
+name = "pitcherai"
+version = "0.1.0"
+description = "AI-Powered Fundraising Outreach - Autonomous agent for investor discovery and personalized email campaigns"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "PitcheRai Team" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business",
+    "Topic :: Communications :: Email",
+]
+keywords = ["fundraising", "investor", "outreach", "ai", "email", "campaign"]
+
+dependencies = [
+    # Core Framework
+    "fastapi==0.109.0",
+    "uvicorn[standard]==0.27.0",
+    "streamlit==1.28.0",
+    
+    # Database
+    "sqlalchemy==2.0.25",
+    "alembic==1.13.1",
+    "psycopg2-binary==2.9.9",
+    "asyncpg==0.29.0",
+    
+    # Cache & Queue
+    "redis==5.0.1",
+    "celery==5.3.4",
+    
+    # HTTP & APIs
+    "httpx==0.25.2",
+    "google-api-python-client==2.111.0",
+    "google-auth-httplib2==0.2.0",
+    "google-auth-oauthlib==1.1.0",
+    
+    # LLM & AI
+    "openai==1.6.1",
+    "anthropic==0.18.1",
+    "litellm==1.14.3",
+    
+    # Data Processing
+    "pandas==2.1.4",
+    "numpy==1.24.3",
+    
+    # Validation & Settings
+    "pydantic==2.5.3",
+    "pydantic-settings==2.1.0",
+    "python-dotenv==1.0.0",
+    
+    # Utilities
+    "python-dateutil==2.8.2",
+    "pytz==2023.3",
+    "schedule==1.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest==7.4.4",
+    "pytest-cov==4.1.0",
+    "pytest-asyncio==0.23.3",
+    
+    # Code Quality
+    "ruff==0.1.14",
+    "pyright==1.1.342",
+    "black==23.12.1",
+]
+
+[project.scripts]
+pitcherai = "scripts.run_dashboard:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/pitcherai"
+Repository = "https://github.com/yourusername/pitcherai"
+Issues = "https://github.com/yourusername/pitcherai/issues"
+
 [tool.black]
 line-length = 88
 target-version = ['py311', 'py312']
