@@ -1,7 +1,7 @@
 """Crunchbase collector client."""
 
 import requests
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from .base import BaseCollector
 from src.config import settings
 
@@ -11,7 +11,7 @@ class CrunchbaseClient(BaseCollector):
 
     BASE_URL = "https://api.crunchbase.com/api/v4"
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or settings.crunchbase_api_key
         self.session = requests.Session()
 
@@ -93,7 +93,7 @@ class CrunchbaseClient(BaseCollector):
         }
         return mapping.get(round_type.lower(), "seed")
 
-    def get_investor_details(self, investor_id: str) -> Dict[str, Any]:
+    def get_investor_details(self, investor_id: str) -> Optional[Dict[str, Any]]:
         """Get investor details from Crunchbase."""
         if not self.api_key or not investor_id:
             return None

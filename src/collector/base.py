@@ -1,7 +1,7 @@
 """Base collector interface."""
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 
 class BaseCollector(ABC):
@@ -13,7 +13,7 @@ class BaseCollector(ABC):
         pass
 
     @abstractmethod
-    def get_investor_details(self, investor_id: str) -> Dict[str, Any]:
+    def get_investor_details(self, investor_id: str) -> Optional[Dict[str, Any]]:
         """Get detailed information about an investor."""
         pass
 

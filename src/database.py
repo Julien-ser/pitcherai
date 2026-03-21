@@ -39,6 +39,7 @@ def get_session() -> Generator[Session, None, None]:
     global _SessionLocal
     if _SessionLocal is None:
         get_engine()
+        assert _SessionLocal is not None
     session = _SessionLocal()
     try:
         yield session

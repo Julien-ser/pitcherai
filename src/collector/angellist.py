@@ -1,7 +1,7 @@
 """AngelList collector client."""
 
 import requests
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from .base import BaseCollector
 from src.config import settings
 
@@ -11,7 +11,7 @@ class AngelListClient(BaseCollector):
 
     BASE_URL = "https://api.angel.co/1"
 
-    def __init__(self, access_token: str = None):
+    def __init__(self, access_token: Optional[str] = None):
         self.access_token = access_token or settings.angellist_access_token
         self.session = requests.Session()
         if self.access_token:
@@ -84,7 +84,7 @@ class AngelListClient(BaseCollector):
             return "series-b"
         return "seed"
 
-    def get_investor_details(self, investor_id: str) -> Dict[str, Any]:
+    def get_investor_details(self, investor_id: str) -> Optional[Dict[str, Any]]:
         """Get investor details from AngelList."""
         if not self.access_token or not investor_id:
             return None
@@ -132,3 +132,9 @@ class AngelListClient(BaseCollector):
         """Search for investors."""
         # Simplified - in production use AngelList search
         return []
+
+    def get_recent_funding_rounds(self, days_back: int = 7) -> List[Dict[str, Any]]:
+        """Get recent funding rounds (compatibility with BaseCollector)."""
+        # AngelList API doesn't directly support date-filtered funding rounds
+        # Use existing method which returns recent announcements
+        return self.get_recent_funding_announcements()
