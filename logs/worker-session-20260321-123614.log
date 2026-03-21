@@ -2325,3 +2325,409 @@ Now let me check the API structure:
 [0m→ [0mRead src/pitcherai/main.py
 [0m✱ [0mGlob "**/*.py"[90m in src/pitcherai/api · 0 matches[0m
 📝 Log saved: logs/iteration-13.md
+📊 Token Usage: 4500 / Session: 50750 / 64000
+Unstaged changes after reset:
+M	logs/worker-session-20260321-123614.log
+✅ Changes committed
+To https://github.com/Julien-ser/pitcherai.git
+   1a1144d..316a20e  wiggum/session-1774110974 -> wiggum/session-1774110974
+✅ Pushed to GitHub (branch: wiggum/session-1774110974)
+📊 Updated Tasks: 6/12 completed, 6 remaining
+   Next task: Write and run tests...
+📍 Iteration 14 at Sat Mar 21 12:55:07 PM EDT 2026...
+✓ Progress: Git commit found
+📊 Task attempt 3: Progress detected, continuing...
+📚 Loading context from previous iteration attempts...
+   Found context in: iteration-13.md
+🤖 OpenCode processing: Write and run tests
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+I'll continue with writing and running tests for the pitcherai project. Let me explore the codebase structure and understand what needs to be tested.
+[0m→ [0mRead README.md
+[0m→ [0mRead pyproject.toml
+[0m✱ [0mGlob "src/**/*.py"[90m 14 matches[0m
+[0m→ [0mRead src/pitcherai/models.py
+[0m→ [0mRead src/pitcherai/services/email_generation.py
+[0m→ [0mRead src/pitcherai/schemas.py
+[0m→ [0mRead src/pitcherai/config.py
+Now let me read the key source files to understand what needs to be tested:
+Let me read a few more key files to understand the full structure:
+[0m→ [0mRead src/pitcherai/crud.py
+[0m→ [0mRead src/pitcherai/database.py
+[0m→ [0mRead src/pitcherai/main.py
+[0m✱ [0mGlob "tests/**/*.py"[90m 1 match[0m
+[0m
+[0m$ [0mfind /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests -type f -name "*.py" 2>/dev/null | head -20
+/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/conftest.py
+[0m
+Let me check the existing test structure:
+Let me check the conftest.py:
+[0m→ [0mRead tests/conftest.py
+Good! There's already a conftest.py with fixtures. Now I need to create comprehensive test files. Let me check what test files are needed and create them:
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/
+total 24
+drwxr-xr-x  4 julien julien 4096 Mar 21 12:53 .
+drwxr-xr-x 12 julien julien 4096 Mar 21 12:42 ..
+-rw-r--r--  1 julien julien 6605 Mar 21 12:53 conftest.py
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 integration
+drwxr-xr-x  2 julien julien 4096 Mar 21 10:49 unit
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/ && ls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/integration/
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 10:49 .
+drwxr-xr-x 4 julien julien 4096 Mar 21 12:53 ..
+total 8
+drwxr-xr-x 2 julien julien 4096 Mar 21 10:49 .
+drwxr-xr-x 4 julien julien 4096 Mar 21 12:53 ..
+[0m
+The test directories are empty. I'll create comprehensive test files for all major components. Let me start with unit tests:
+[0m← [0mWrite tests/unit/test_config.py
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py">
+ERROR [27:34] Expected type arguments for generic class "list"
+ERROR [28:47] Expected type arguments for generic class "list"
+ERROR [27:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [28:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [89:34] Expected type arguments for generic class "list"
+ERROR [90:47] Expected type arguments for generic class "list"
+ERROR [55:19] Type of "_build_context" is partially unknown
+  Type of "_build_context" is "(investor_name: str, investor_firm: str | None, investor_focus: list[Unknown] | None, investor_recent_investments: list[Unknown] | None, user_startup: str, user_description: str, user_niche: str, custom_vars: Dict[str, Any]) -> Dict[str, Any]"
+ERROR [132:34] Expected type arguments for generic class "list"
+ERROR [133:47] Expected type arguments for generic class "list"
+ERROR [71:31] Type of "_enhance_with_ai" is partially unknown
+  Type of "_enhance_with_ai" is "(investor_name: str, investor_firm: str | None, investor_focus: list[Unknown] | None, investor_recent_investments: list[Unknown] | None, user_startup: str, user_description: str, user_niche: str, base_body: str, custom_vars: Dict[str, Any]) -> CoroutineType[Any, Any, str]"
+ERROR [89:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [90:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [100:41] Argument type is partially unknown
+  Argument corresponds to parameter "iterable" in function "join"
+  Argument type is "list[Unknown]"
+ERROR [108:13] Type of "recent" is partially unknown
+  Type of "recent" is "list[Unknown]"
+ERROR [111:21] Type of "inv" is unknown
+ERROR [110:20] Type of "get" is unknown
+ERROR [110:58] Type of "get" is unknown
+ERROR [132:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [133:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [159:61] Argument type is partially unknown
+  Argument corresponds to parameter "iterable" in function "join"
+  Argument type is "list[Unknown]"
+... and 6 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py">
+ERROR [18:6] Stub file not found for "pitcherai.database"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py">
+ERROR [41:27] Expected type arguments for generic class "list"
+ERROR [42:33] Expected type arguments for generic class "list"
+ERROR [48:24] Expected type arguments for generic class "dict"
+ERROR [57:27] Expected type arguments for generic class "list"
+ERROR [58:33] Expected type arguments for generic class "list"
+ERROR [103:31] Expected type arguments for generic class "dict"
+ERROR [114:31] Expected type arguments for generic class "dict"
+ERROR [165:27] Expected type arguments for generic class "dict"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/database.py">
+ERROR [5:6] Stub file not found for "pitcherai.config"
+ERROR [32:19] Return type of async generator function must be compatible with "AsyncGenerator[AsyncSession, Any]"
+  "AsyncGenerator[AsyncSession, Unknown, Unknown]" is not assignable to "AsyncSession"
+ERROR [28:23] Return type of async generator function must be compatible with "AsyncGenerator[Any, Any]"
+  "AsyncGenerator[Any, Any, Any]" is not assignable to "AsyncSession"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py">
+ERROR [67:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [67:16] Type of "rowcount" is unknown
+ERROR [67:16] Return type is unknown
+ERROR [73:16] Type "Sequence[User]" is not assignable to return type "List[User]"
+  "Sequence[User]" is not assignable to "List[User]"
+ERROR [105:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [105:16] Type of "rowcount" is unknown
+ERROR [105:16] Return type is unknown
+ERROR [111:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [122:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [133:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [165:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [165:16] Type of "rowcount" is unknown
+ERROR [165:16] Return type is unknown
+ERROR [171:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [177:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [209:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [209:16] Type of "rowcount" is unknown
+ERROR [209:16] Return type is unknown
+ERROR [215:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+ERROR [226:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+... and 18 more
+</diagnostics>
+[0m
+[0m← [0mWrite tests/unit/test_schemas.py
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py">
+ERROR [27:34] Expected type arguments for generic class "list"
+ERROR [28:47] Expected type arguments for generic class "list"
+ERROR [27:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [28:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [89:34] Expected type arguments for generic class "list"
+ERROR [90:47] Expected type arguments for generic class "list"
+ERROR [55:19] Type of "_build_context" is partially unknown
+  Type of "_build_context" is "(investor_name: str, investor_firm: str | None, investor_focus: list[Unknown] | None, investor_recent_investments: list[Unknown] | None, user_startup: str, user_description: str, user_niche: str, custom_vars: Dict[str, Any]) -> Dict[str, Any]"
+ERROR [132:34] Expected type arguments for generic class "list"
+ERROR [133:47] Expected type arguments for generic class "list"
+ERROR [71:31] Type of "_enhance_with_ai" is partially unknown
+  Type of "_enhance_with_ai" is "(investor_name: str, investor_firm: str | None, investor_focus: list[Unknown] | None, investor_recent_investments: list[Unknown] | None, user_startup: str, user_description: str, user_niche: str, base_body: str, custom_vars: Dict[str, Any]) -> CoroutineType[Any, Any, str]"
+ERROR [89:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [90:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [100:41] Argument type is partially unknown
+  Argument corresponds to parameter "iterable" in function "join"
+  Argument type is "list[Unknown]"
+ERROR [108:13] Type of "recent" is partially unknown
+  Type of "recent" is "list[Unknown]"
+ERROR [111:21] Type of "inv" is unknown
+ERROR [110:20] Type of "get" is unknown
+ERROR [110:58] Type of "get" is unknown
+ERROR [132:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [133:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [159:61] Argument type is partially unknown
+  Argument corresponds to parameter "iterable" in function "join"
+  Argument type is "list[Unknown]"
+... and 6 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py">
+ERROR [18:6] Stub file not found for "pitcherai.database"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py">
+ERROR [41:27] Expected type arguments for generic class "list"
+ERROR [42:33] Expected type arguments for generic class "list"
+ERROR [48:24] Expected type arguments for generic class "dict"
+ERROR [57:27] Expected type arguments for generic class "list"
+ERROR [58:33] Expected type arguments for generic class "list"
+ERROR [103:31] Expected type arguments for generic class "dict"
+ERROR [114:31] Expected type arguments for generic class "dict"
+ERROR [165:27] Expected type arguments for generic class "dict"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/database.py">
+ERROR [5:6] Stub file not found for "pitcherai.config"
+ERROR [32:19] Return type of async generator function must be compatible with "AsyncGenerator[AsyncSession, Any]"
+  "AsyncGenerator[AsyncSession, Unknown, Unknown]" is not assignable to "AsyncSession"
+ERROR [28:23] Return type of async generator function must be compatible with "AsyncGenerator[Any, Any]"
+  "AsyncGenerator[Any, Any, Any]" is not assignable to "AsyncSession"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py">
+ERROR [67:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [67:16] Type of "rowcount" is unknown
+ERROR [67:16] Return type is unknown
+ERROR [73:16] Type "Sequence[User]" is not assignable to return type "List[User]"
+  "Sequence[User]" is not assignable to "List[User]"
+ERROR [105:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [105:16] Type of "rowcount" is unknown
+ERROR [105:16] Return type is unknown
+ERROR [111:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [122:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [133:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [165:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [165:16] Type of "rowcount" is unknown
+ERROR [165:16] Return type is unknown
+ERROR [171:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [177:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [209:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [209:16] Type of "rowcount" is unknown
+ERROR [209:16] Return type is unknown
+ERROR [215:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+ERROR [226:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+... and 18 more
+</diagnostics>
+
+LSP errors detected in this file, please fix:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/test_schemas.py">
+ERROR [79:51] Argument of type "Literal['invalid']" cannot be assigned to parameter "investor_type" of type "Literal['vc', 'angel']" in function "__init__"
+  Type "Literal['invalid']" is not assignable to type "Literal['vc', 'angel']"
+    "Literal['invalid']" is not assignable to type "Literal['vc']"
+    "Literal['invalid']" is not assignable to type "Literal['angel']"
+ERROR [107:21] Cannot access attribute "status" for class "CampaignCreate"
+  Attribute "status" is unknown
+</diagnostics>
+[0m
+[0m← [0mWrite tests/unit/test_models.py
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/services/email_generation.py">
+ERROR [27:34] Expected type arguments for generic class "list"
+ERROR [28:47] Expected type arguments for generic class "list"
+ERROR [27:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [28:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [89:34] Expected type arguments for generic class "list"
+ERROR [90:47] Expected type arguments for generic class "list"
+ERROR [55:19] Type of "_build_context" is partially unknown
+  Type of "_build_context" is "(investor_name: str, investor_firm: str | None, investor_focus: list[Unknown] | None, investor_recent_investments: list[Unknown] | None, user_startup: str, user_description: str, user_niche: str, custom_vars: Dict[str, Any]) -> Dict[str, Any]"
+ERROR [132:34] Expected type arguments for generic class "list"
+ERROR [133:47] Expected type arguments for generic class "list"
+ERROR [71:31] Type of "_enhance_with_ai" is partially unknown
+  Type of "_enhance_with_ai" is "(investor_name: str, investor_firm: str | None, investor_focus: list[Unknown] | None, investor_recent_investments: list[Unknown] | None, user_startup: str, user_description: str, user_niche: str, base_body: str, custom_vars: Dict[str, Any]) -> CoroutineType[Any, Any, str]"
+ERROR [89:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [90:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [100:41] Argument type is partially unknown
+  Argument corresponds to parameter "iterable" in function "join"
+  Argument type is "list[Unknown]"
+ERROR [108:13] Type of "recent" is partially unknown
+  Type of "recent" is "list[Unknown]"
+ERROR [111:21] Type of "inv" is unknown
+ERROR [110:20] Type of "get" is unknown
+ERROR [110:58] Type of "get" is unknown
+ERROR [132:9] Type of parameter "investor_focus" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [133:9] Type of parameter "investor_recent_investments" is partially unknown
+  Parameter type is "list[Unknown] | None"
+ERROR [159:61] Argument type is partially unknown
+  Argument corresponds to parameter "iterable" in function "join"
+  Argument type is "list[Unknown]"
+... and 6 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/models.py">
+ERROR [18:6] Stub file not found for "pitcherai.database"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/schemas.py">
+ERROR [41:27] Expected type arguments for generic class "list"
+ERROR [42:33] Expected type arguments for generic class "list"
+ERROR [48:24] Expected type arguments for generic class "dict"
+ERROR [57:27] Expected type arguments for generic class "list"
+ERROR [58:33] Expected type arguments for generic class "list"
+ERROR [103:31] Expected type arguments for generic class "dict"
+ERROR [114:31] Expected type arguments for generic class "dict"
+ERROR [165:27] Expected type arguments for generic class "dict"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/database.py">
+ERROR [5:6] Stub file not found for "pitcherai.config"
+ERROR [32:19] Return type of async generator function must be compatible with "AsyncGenerator[AsyncSession, Any]"
+  "AsyncGenerator[AsyncSession, Unknown, Unknown]" is not assignable to "AsyncSession"
+ERROR [28:23] Return type of async generator function must be compatible with "AsyncGenerator[Any, Any]"
+  "AsyncGenerator[Any, Any, Any]" is not assignable to "AsyncSession"
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/src/pitcherai/crud.py">
+ERROR [67:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [67:16] Type of "rowcount" is unknown
+ERROR [67:16] Return type is unknown
+ERROR [73:16] Type "Sequence[User]" is not assignable to return type "List[User]"
+  "Sequence[User]" is not assignable to "List[User]"
+ERROR [105:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [105:16] Type of "rowcount" is unknown
+ERROR [105:16] Return type is unknown
+ERROR [111:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [122:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [133:16] Type "Sequence[Investor]" is not assignable to return type "List[Investor]"
+  "Sequence[Investor]" is not assignable to "List[Investor]"
+ERROR [165:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [165:16] Type of "rowcount" is unknown
+ERROR [165:16] Return type is unknown
+ERROR [171:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [177:16] Type "Sequence[Template]" is not assignable to return type "List[Template]"
+  "Sequence[Template]" is not assignable to "List[Template]"
+ERROR [209:23] Cannot access attribute "rowcount" for class "Result[Any]"
+  Attribute "rowcount" is unknown
+ERROR [209:16] Type of "rowcount" is unknown
+ERROR [209:16] Return type is unknown
+ERROR [215:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+ERROR [226:16] Type "Sequence[Campaign]" is not assignable to return type "List[Campaign]"
+  "Sequence[Campaign]" is not assignable to "List[Campaign]"
+... and 18 more
+</diagnostics>
+[0m
+I need to fix the LSP errors in the test files. Let me correct them:
+[0m✗ [0medit failed
+[91m[1mError: [0mCould not find oldString in the file. It must match exactly, including whitespace, indentation, and line endings.
+[0m
+[0m← [0mEdit tests/unit/test_schemas.py
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/test_schemas.py
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/test_schemas.py
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/tests/unit/test_schemas.py
+@@ -103,9 +103,10 @@
+         "target_criteria": {"focus": ["AI"]},
+     }
+     campaign = CampaignCreate(**campaign_data)
+     assert campaign.name == "Seed Round Campaign"
+-    assert campaign.status == "draft"  # default value
++    # status has default value 'draft' in CampaignBase
++    assert campaign.status == "draft"
+ 
+ 
+ def test_campaign_target_create_valid():
+     """Test valid campaign target creation."""
+
+[0m
+Let me re-read the file to see the exact content:
+[0m→ [0mRead tests/unit/test_schemas.py
+📝 Log saved: logs/iteration-14.md
