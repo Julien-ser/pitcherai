@@ -1,0 +1,8 @@
+campaign
+collector
+config
+dashboard
+database
+drafter
+email
+targeter

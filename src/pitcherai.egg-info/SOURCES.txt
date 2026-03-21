@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/campaign/__init__.py
+src/collector/__init__.py
+src/config/__init__.py
+src/config/config.py
+src/dashboard/__init__.py
+src/database/__init__.py
+src/drafter/__init__.py
+src/email/__init__.py
+src/pitcherai.egg-info/PKG-INFO
+src/pitcherai.egg-info/SOURCES.txt
+src/pitcherai.egg-info/dependency_links.txt
+src/pitcherai.egg-info/entry_points.txt
+src/pitcherai.egg-info/requires.txt
+src/pitcherai.egg-info/top_level.txt
+src/targeter/__init__.py

@@ -1,3 +1,46 @@
+Metadata-Version: 2.4
+Name: pitcherai
+Version: 0.1.0
+Summary: AI-Pitched — autonomous VC/angel outreach agent
+Author: PitcherAI Team
+License: MIT
+Keywords: fundraising,vc,outreach,automation,ai
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: alembic>=1.12.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: google-auth>=2.0.0
+Requires-Dist: google-auth-oauthlib>=1.0.0
+Requires-Dist: google-auth-httplib2>=0.1.0
+Requires-Dist: google-api-python-client>=2.0.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Requires-Dist: feedparser>=6.0.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: httpx>=0.24.0
+Requires-Dist: apscheduler>=3.10.0
+Requires-Dist: streamlit>=1.28.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: tenacity>=8.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: pyright>=1.1.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: pre-commit>=3.0.0; extra == "dev"
+
 # PitcherAI
 
 **AI-Pitched** — An autonomous agent that monitors startup funding announcements, identifies relevant VCs/angels, and auto-drafts personalized cold emails. Tracks responses and learns what converts.
@@ -21,10 +64,10 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system design, component bre
 
 ## Current Status
 
-**Phase 1: Setup & Planning** (Completed)
+**Phase 1: Setup & Planning** (In Progress)
 - ✅ Requirements review & architecture design
-- ✅ Development environment and dependencies setup
-- ✅ Project structure created
+- ⏳ Set up development environment and dependencies
+- ⏳ Create project structure
 
 ## Tech Stack
 
