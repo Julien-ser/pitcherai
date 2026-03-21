@@ -11,8 +11,8 @@ from sqlalchemy import select
 from ..config import settings
 from ..database import AsyncSessionLocal
 from .. import crud
-from .email_generation import email_generator
-from .gmail import gmail_service
+from ..services.email_generation import email_generator
+from ..services.gmail import gmail_service
 
 
 # Create Celery app

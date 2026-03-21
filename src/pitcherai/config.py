@@ -36,6 +36,14 @@ class Settings(BaseSettings):
     # Anthropic (optional)
     anthropic_api_key: str | None = Field(default=None, description="Anthropic API key")
 
+    # External APIs
+    crunchbase_api_key: str | None = Field(
+        default=None, description="Crunchbase API key"
+    )
+    angellist_access_token: str | None = Field(
+        default=None, description="AngelList access token"
+    )
+
     # Gmail API
     gmail_client_id: str | None = Field(
         default=None, description="Gmail OAuth client ID"

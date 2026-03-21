@@ -13,10 +13,10 @@
 - [x] Set up development environment and dependencies
 - [x] Create project structure
 
-## Phase 2: Core Implementation  
-- [ ] Implement main features
-- [ ] Integrate APIs and libraries
-- [ ] Build core logic
+## Phase 2: Core Implementation
+- [x] Implement main features
+- [x] Integrate APIs and libraries
+- [x] Build core logic
 
 ## Phase 3: Testing
 - [ ] Write and run tests

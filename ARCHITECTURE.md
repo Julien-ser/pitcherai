@@ -1,311 +1,159 @@
-# PitcherAI Architecture Design
+# PitcherAI System Architecture
 
-## System Overview
+## Overview
 
-PitcherAI is an autonomous agent that automates VC/angel investor outreach by:
-- Monitoring startup funding announcements
-- Identifying relevant investors based on niche
-- Auto-drafting personalized cold emails
-- Tracking responses and learning from results
+PitcherAI is an AI-powered autonomous VC outreach agent that automates the entire process of finding investors, personalizing cold emails, and tracking campaign performance.
 
-## Architecture Components
+## System Components
 
-### 1. Data Collection Layer
-- **Crunchbase Scraper**: API integration or scraping for funding data
-- **AngelList Scraper**: Monitor startup investments
-- **Press Monitor**: RSS feeds and news APIs for funding announcements
-- **Optional**: LinkedIn API for shared connections
+### 1. FastAPI Backend (`src/pitcherai/main.py`)
 
-### 2. Data Processing Layer
-- **Investor Profile Builder**: Normalize and enrich investor data
-- **Niche Matching Engine**: Match investor focus areas to user's startup niche
-- **Portfolio Analyzer**: Analyze investment patterns and portfolio alignment
+RESTful API with the following main endpoints:
 
-### 3. AI/Personalization Layer
-- **Email Generator**: LLM-based email drafting (OpenAI GPT, Anthropic Claude)
-- **Personalization Context Builder**: Gather data for personalization hooks
-- **Template Manager**: A/B test different email templates
+- **Users**: `/api/users` - Manage startup user profiles
+- **Investors**: `/api/investors` - CRUD for investor profiles
+- **Templates**: `/api/templates` - Email template management
+- **Campaigns**: `/api/campaigns` - Campaign creation and management
+- **Campaign Targets**: `/api/campaigns/{id}/targets` - Manage campaign targets
+- **Email Generation**: `/api/generate-email` - AI-powered email personalization
+- **Prospecting**: `/api/prospecting/import` - Import investors from external sources
+- **Analytics**: `/api/analytics/*` - Campaign performance metrics
+- **Tracking**: `/api/tracking/*` - Email open and reply tracking
 
-### 4. Campaign Management Layer
-- **Target List Manager**: Curate and prioritize target investors
-- **Campaign Scheduler**: Plan and sequence outreach
-- **Override/Dashboard**: Human review and manual send control
-- **Email Sender**: Gmail API integration with rate limiting
+### 2. Database Schema
 
-### 5. Tracking & Learning Layer
-- **Response Tracker**: Monitor opens, clicks, replies
-- **Analytics Engine**: Calculate response rates and conversion metrics
-- **Learning System**: Optimize templates and targeting based on performance
+PostgreSQL database with the following tables:
 
-### 6. Presentation Layer
-- **Dashboard (Streamlit)**: Review targets, approve/reject emails, view metrics
-- **REST API (FastAPI)**: Backend service for all operations
+- **users**: Startup profiles (email, name, description, niche)
+- **investors**: VC/angel profiles with focus areas, location, etc.
+- **investments**: Track investor's portfolio companies and rounds
+- **shared_connections**: Mutual connections between user and investors
+- **templates**: Email templates with subject/body placeholders
+- **campaigns**: Outreach campaigns with criteria
+- **campaign_targets**: Individual investor targets for campaigns
+- **email_tracking**: Track opens, clicks, and replies
+- **analytics**: Daily campaign performance snapshots
 
-## Technology Stack
+### 3. Services
 
-- **Backend**: Python 3.11+
-- **API**: FastAPI
-- **Database**: PostgreSQL
-- **Async Tasks**: Celery + Redis
-- **Dashboard**: Streamlit
-- **AI**: OpenAI API / Anthropic Claude
-- **Email**: Gmail API
-- **Package Manager**: uv
-- **Testing**: pytest, pytest-cov
-- **Linting**: Ruff
-- **Type Checking**: Pyright
-- **CI/CD**: GitHub Actions
+#### Email Generation Service (`services/email_generation.py`)
+Uses OpenAI GPT-4 to personalize email templates based on:
+- Investor's recent investments
+- Focus areas and portfolio
+- User's startup description
+- Template structure
 
-## Database Schema
+#### Campaign Service (`services/campaign.py`)
+Manages campaign lifecycle:
+- Creating campaigns with target criteria
+- Finding matching investors
+- Generating emails for targets
+- Approving/rejecting targets
+- Starting/pausing campaigns
 
-```sql
--- Users/startups
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email VARCHAR(255) UNIQUE NOT NULL,
-    startup_name VARCHAR(255) NOT NULL,
-    startup_description TEXT,
-    niche VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+#### Prospecting Service (`services/prospecting.py`)
+Discovers and imports investors from:
+- Crunchbase API
+- AngelList API
+Enriches investor profiles with portfolio data.
 
--- VC firms and investors
-CREATE TABLE investors (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    type VARCHAR(50) NOT NULL, -- 'vc', 'angel', 'fund'
-    firm_name VARCHAR(255),
-    email VARCHAR(255),
-    linkedin_url TEXT,
-    focus_areas JSONB, -- array of investment sectors
-    stage_preferences JSONB, -- 'seed', 'series_a', etc.
-    location VARCHAR(255),
-    source VARCHAR(100), -- 'crunchbase', 'angellist', etc.
-    raw_data JSONB, -- original data from source
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
+#### Gmail Service (`services/gmail.py`)
+Handles email delivery via Gmail API with rate limiting and tracking.
 
--- Startup investments (for portfolio analysis)
-CREATE TABLE investments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    investor_id UUID REFERENCES investors(id),
-    startup_name VARCHAR(255) NOT NULL,
-    investment_date DATE,
-    round_type VARCHAR(100),
-    amount_usd DECIMAL(15,2),
-    source VARCHAR(100),
-    raw_data JSONB,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+### 4. Celery Tasks (`tasks/__init__.py`)
 
--- Shared connections (if LinkedIn integration)
-CREATE TABLE shared_connections (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id),
-    investor_id UUID REFERENCES investors(id),
-    connection_name VARCHAR(255),
-    connection_email VARCHAR(255),
-    relationship VARCHAR(255),
-    created_at TIMESTAMP DEFAULT NOW()
-);
+Asynchronous background jobs:
+- `send_single_email`: Send individual emails with tracking
+- `generate_and_send_campaign_emails`: Batch email generation and sending
+- `track_email_opens`: Process open tracking pixels
+- `track_email_replies`: Process reply webhooks
 
--- Email templates
-CREATE TABLE templates (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    subject_template TEXT NOT NULL,
-    body_template TEXT NOT NULL,
-    variant_id VARCHAR(100), -- for A/B testing
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+### 5. Streamlit Dashboard (`dashboard/app.py`)
 
--- Campaigns
-CREATE TABLE campaigns (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id),
-    name VARCHAR(255) NOT NULL,
-    status VARCHAR(50) DEFAULT 'draft', -- 'draft', 'active', 'paused', 'completed'
-    template_id UUID REFERENCES templates(id),
-    target_criteria JSONB, -- filter criteria for targets
-    started_at TIMESTAMP,
-    completed_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+Web-based UI for:
+- Reviewing generated emails before sending
+- Approving/rejecting campaign targets
+- Monitoring campaign performance
+- Viewing analytics and metrics
 
--- Target investors for a campaign
-CREATE TABLE campaign_targets (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    campaign_id UUID REFERENCES campaigns(id),
-    investor_id UUID REFERENCES investors(id),
-    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'sent'
-    email_subject TEXT,
-    email_body TEXT,
-    scheduled_send_at TIMESTAMP,
-    sent_at TIMESTAMP,
-    user_override_notes TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+### 6. CLI (`cli.py`)
 
--- Email tracking
-CREATE TABLE email_tracking (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    campaign_target_id UUID REFERENCES campaign_targets(id),
-    message_id VARCHAR(255), -- Gmail message ID
-    opens_count INT DEFAULT 0,
-    clicks_count INT DEFAULT 0,
-    replied_at TIMESTAMP,
-    bounced_at TIMESTAMP,
-    last_opened_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Analytics
-CREATE TABLE analytics (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    campaign_id UUID REFERENCES campaigns(id),
-    date DATE NOT NULL,
-    sent_count INT DEFAULT 0,
-    open_count INT DEFAULT 0,
-    click_count INT DEFAULT 0,
-    reply_count INT DEFAULT 0,
-    open_rate DECIMAL(5,2),
-    reply_rate DECIMAL(5,2),
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(campaign_id, date)
-);
-```
-
-## API Design (FastAPI)
-
-### Core Endpoints
-
-**Users**
-- `POST /api/users` - Create user
-- `GET /api/users/{id}` - Get user profile
-- `PUT /api/users/{id}` - Update user profile
-
-**Investors**
-- `GET /api/investors` - List investors (with filters)
-- `POST /api/investors` - Bulk create investors (admin)
-- `GET /api/investors/{id}` - Get investor details
-- `GET /api/investors/{id}/investments` - Get investor's portfolio
-
-**Campaigns**
-- `POST /api/campaigns` - Create campaign
-- `GET /api/campaigns` - List campaigns
-- `GET /api/campaigns/{id}` - Get campaign details
-- `PUT /api/campaigns/{id}` - Update campaign
-- `DELETE /api/campaigns/{id}` - Delete campaign
-- `POST /api/campaigns/{id}/start` - Start campaign
-- `POST /api/campaigns/{id}/pause` - Pause campaign
-
-**Campaign Targets**
-- `GET /api/campaigns/{id}/targets` - Get campaign targets with status
-- `POST /api/campaigns/{id}/targets` - Add targets to campaign
-- `PUT /api/campaigns/{id}/targets/{target_id}` - Update target (override email, approve/reject)
-- `POST /api/campaigns/{id}/targets/{target_id}/send` - Manually send to specific target
-
-**Templates**
-- `GET /api/templates` - List templates
-- `POST /api/templates` - Create template
-- `GET /api/templates/{id}` - Get template
-- `PUT /api/templates/{id}` - Update template
-
-**Email Generation**
-- `POST /api/generate-email` - Generate personalized email for investor
-- `POST /api/generate-campaign-emails` - Generate emails for all targets in campaign
-
-**Analytics**
-- `GET /api/analytics/campaign/{campaign_id}` - Get campaign analytics
-- `GET /api/analytics/dashboard` - Get overall dashboard metrics
-
-**Dashboard (Streamlit)**
-- Separate Streamlit app that calls the same FastAPI backend
+Command-line interface for:
+- Importing investors from external sources
+- Enriching investor portfolios
+- Managing campaigns
 
 ## Data Flow
 
-1. **Data Ingestion** (daily cron)
-   - Fetch new funding announcements from Crunchbase/AngelList
-   - Extract investor information and create/update investor records
-   - Fetch related investment data for portfolio analysis
+### Campaign Creation Flow
 
-2. **Target Identification**
-   - User defines their startup profile (niche, stage, location)
-   - System matches investors based on:
-     - Focus area alignment
-     - Stage preference match
-     - Recent investment activity
-     - Portfolio overlap
-     - Location (if relevant)
+1. User creates campaign with target criteria (e.g., focus areas, investor types)
+2. System queries database for matching investors
+3. Creates campaign target records
+4. Generates personalized emails for each target
+5. Emails await human review (or auto-approve)
+6. Approved targets are queued for sending via Celery
+7. Emails are sent through Gmail API with rate limiting
+8. Opens and replies are tracked
 
-3. **Campaign Creation**
-   - User selects targets and email template
-   - System generates personalized emails for each target using LLM
-   - Emails are created as "pending" campaign targets
+### Email Generation Flow
 
-4. **Human Review** (Dashboard)
-   - User reviews generated emails in Streamlit dashboard
-   - User can approve, reject, or edit emails before sending
-   - User can schedule send times
+1. Fetch investor profile and recent investments
+2. Retrieve user's startup profile
+3. Load email template
+4. Fill template placeholders with basic data
+5. Enhance with AI for personalization
+6. Store generated content in campaign_target
+7. Display for review in dashboard
 
-5. **Email Sending**
-   - Approved emails are sent via Gmail API
-   - Rate limiting applied to avoid spam flags
-   - Tracking pixels and click tracking enabled
+### Prospecting Flow
 
-6. **Response Tracking**
-   - Monitor replies via Gmail API
-   - Track opens (pixel) and clicks (tracked links)
-   - Update analytics daily
+1. Provide search queries (e.g., "AI", "SaaS", "FinTech")
+2. Query Crunchbase/AngelList APIs
+3. Parse and normalize investor data
+4. Check for duplicates
+5. Import new investors to database
+6. Optionally enrich with portfolio investments
 
-7. **Learning Loop**
-   - Calculate performance metrics (open rate, reply rate)
-   - Identify high-performing templates and target segments
-   - Suggest optimizations for future campaigns
+## Configuration
 
-## Security Considerations
-
-- Store all API keys in environment variables / secret management
-- Use OAuth2 for API authentication (JWT)
-- Encrypt sensitive data at rest
-- Implement rate limiting on API
-- Follow email best practices to avoid spam (SPF, DKIM, warm-up)
-- GDPR compliance: data retention, right to delete
-
-## Scalability
-
-- Use database connection pooling
-- Cache frequently accessed data in Redis
-- Process data ingestion asynchronously with Celery
-- Queue email sending to manage rate limits
-- Implement pagination on all list endpoints
-- Consider read replicas for dashboard queries
+All configuration via environment variables (see `.env.example`):
+- Database and Redis connections
+- API keys (OpenAI, Gmail, Crunchbase, AngelList)
+- Email sending limits
+- Celery broker settings
 
 ## Deployment
 
-- Deploy backend on cloud (Fly.io, Railway, Render, or AWS)
-- Deploy database on managed service (Supabase, RDS, Neon)
-- Deploy Streamlit on Streamlit Cloud or as separate service
-- Use GitHub Actions for CI/CD (already configured)
-- Environment-based configuration (dev/staging/prod)
+### Local Development
 
-## Initial Implementation Order
+1. Install dependencies: `uv pip install -e .`
+2. Set up `.env` file from `.env.example`
+3. Initialize database: `python -c "from pitcherai.database import init_db; import asyncio; asyncio.run(init_db())"`
+4. Start FastAPI: `uv run python -m pitcherai.main`
+5. Start Celery worker: `celery -A pitcherai.tasks worker --loglevel=info`
+6. Start Streamlit dashboard: `uv run streamlit run src/pitcherai/dashboard/app.py`
 
-Phase 1 (Setup & Planning) - Current Task:
-- [x] Design architecture (this document)
-- [ ] Create pyproject.toml with dependencies
-- [ ] Create src/ directory structure
-- [ ] Set up database schema
-- [ ] Create .env.example
+### Production
 
-Phase 2 (Core Implementation):
-- [ ] Set up FastAPI boilerplate
-- [ ] Create database models (SQLAlchemy)
-- [ ] Implement basic CRUD for investors, campaigns
-- [ ] Implement email generation with OpenAI
-- [ ] Implement Gmail API sender
-- [ ] Build Streamlit dashboard
+- Use PostgreSQL and Redis managed services
+- Run FastAPI with gunicorn/uvicorn
+- Run Celery with appropriate concurrency
+- Set up GitHub Actions CI/CD
+- Configure proper security (HTTPS, firewall, secrets)
 
-Phase 3 & 4: Testing, Documentation, Deployment
+## API Design Principles
+
+- RESTful endpoints with JSON payloads
+- UUID for all resource identifiers
+- Consistent error responses (HTTP status codes)
+- Async SQLAlchemy for database operations
+- Pydantic schemas for request/response validation
+
+## Scaling Considerations
+
+- Database connection pooling (pool_size=10, max_overflow=20)
+- Celery for asynchronous task processing
+- Rate limiting on email sending (configurable)
+- Caching strategies for frequently accessed data
+- Pagination for list endpoints

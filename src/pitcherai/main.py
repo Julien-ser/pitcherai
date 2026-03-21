@@ -13,6 +13,7 @@ from . import crud
 from .models import Investment
 from .services.email_generation import email_generator
 from .services.campaign import campaign_service
+from .services.prospecting import prospecting_service
 from .schemas import (
     UserCreate,
     UserUpdate,
@@ -26,9 +27,12 @@ from .schemas import (
     CampaignCreate,
     CampaignUpdate,
     CampaignResponse,
+    CampaignTargetCreate,
     CampaignTargetUpdate,
+    CampaignTargetResponse,
     EmailGenerateRequest,
     EmailGenerateResponse,
+    AnalyticsResponse,
 )
 
 
@@ -389,6 +393,279 @@ async def generate_campaign_emails(
         raise HTTPException(status_code=400, detail="Invalid campaign ID")
     await campaign_service._generate_emails_for_campaign(db, cid)
     return {"message": "Emails generated successfully", "campaign_id": campaign_id}
+
+
+# Prospecting
+@app.post("/api/prospecting/import")
+async def import_investors(
+    queries: list[str] = [],
+    sources: list[str] = ["crunchbase", "angellist"],
+    limit: int = 50,
+    db: AsyncSession = Depends(get_db),
+):
+    """Import investors from external sources."""
+    count = await prospecting_service.import_investors_from_sources(
+        db, queries=queries, sources=sources, limit_per_source=limit
+    )
+    return {"imported_count": count}
+
+
+@app.post("/api/prospecting/enrich/{investor_id}")
+async def enrich_investor_portfolio(
+    investor_id: str, db: AsyncSession = Depends(get_db)
+):
+    """Enrich an investor's portfolio with recent investments."""
+    from uuid import UUID
+
+    try:
+        iid = UUID(investor_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid investor ID")
+    count = await prospecting_service.enrich_investor_portfolio(db, investor_id=iid)
+    return {"investor_id": investor_id, "investments_added": count}
+
+
+# Campaign Targets
+@app.post("/api/campaigns/{campaign_id}/targets", response_model=CampaignTargetResponse)
+async def add_campaign_target(
+    campaign_id: str,
+    target: CampaignTargetCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Add a target to a campaign."""
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+
+    # Verify campaign exists
+    campaign = await crud.campaign.get(db, id=cid)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+
+    # Override campaign_id in the target
+    target_data = target.model_dump()
+    target_data["campaign_id"] = cid
+    target_create = CampaignTargetCreate(**target_data)
+
+    return await crud.campaign_target.create(db, obj_in=target_create)
+
+
+@app.get(
+    "/api/campaigns/{campaign_id}/targets", response_model=list[CampaignTargetResponse]
+)
+async def list_campaign_targets(
+    campaign_id: str,
+    status: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """List targets for a campaign with optional filter."""
+    from uuid import UUID
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+
+    if status:
+        # Filter by status would need custom query
+        targets = await crud.campaign_target.get_by_campaign(db, campaign_id=cid)
+        return [t for t in targets if t.status == status]
+    return await crud.campaign_target.get_by_campaign(db, campaign_id=cid)
+
+
+@app.put("/api/campaign-targets/{target_id}", response_model=CampaignTargetResponse)
+async def update_campaign_target(
+    target_id: str,
+    target_update: CampaignTargetUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Update a campaign target."""
+    from uuid import UUID
+
+    try:
+        tid = UUID(target_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid target ID")
+    target = await crud.campaign_target.get(db, id=tid)
+    if not target:
+        raise HTTPException(status_code=404, detail="Target not found")
+    return await crud.campaign_target.update(db, db_obj=target, obj_in=target_update)
+
+
+@app.delete("/api/campaign-targets/{target_id}")
+async def delete_campaign_target(target_id: str, db: AsyncSession = Depends(get_db)):
+    """Delete a campaign target."""
+    from uuid import UUID
+
+    try:
+        tid = UUID(target_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid target ID")
+    success = await crud.campaign_target.delete(db, id=tid)
+    if not success:
+        raise HTTPException(status_code=404, detail="Target not found")
+    return {"deleted": True}
+
+
+# Email Tracking
+@app.get("/api/tracking")
+async def list_email_tracking(
+    campaign_id: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """List email tracking records."""
+    from uuid import UUID
+
+    if campaign_id:
+        try:
+            cid = UUID(campaign_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid campaign ID")
+        # Get all targets for campaign
+        targets = await crud.campaign_target.get_by_campaign(db, campaign_id=cid)
+        result = []
+        for target in targets:
+            tracking = await crud.email_tracking.get_by_target(db, target_id=target.id)
+            if tracking:
+                result.append(
+                    {
+                        "target_id": str(target.id),
+                        "investor_name": target.investor.name,
+                        "opens_count": tracking.opens_count,
+                        "replied_at": tracking.replied_at.isoformat()
+                        if tracking.replied_at
+                        else None,
+                        "last_opened_at": tracking.last_opened_at.isoformat()
+                        if tracking.last_opened_at
+                        else None,
+                    }
+                )
+        return {"campaign_id": campaign_id, "tracking": result}
+    return {"message": "Specify campaign_id to get tracking data"}
+
+
+@app.post("/api/tracking/{target_id}/opens")
+async def track_email_open(target_id: str, db: AsyncSession = Depends(get_db)):
+    """Track email open (for webhook/pixel tracking)."""
+    from uuid import UUID
+
+    try:
+        tid = UUID(target_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid target ID")
+    tracking = await crud.email_tracking.update_open(db, target_id=tid)
+    await db.commit()
+    if not tracking:
+        raise HTTPException(status_code=404, detail="Tracking record not found")
+    return {"tracked": True, "opens_count": tracking.opens_count}
+
+
+@app.post("/api/tracking/{target_id}/replies")
+async def track_email_reply(target_id: str, db: AsyncSession = Depends(get_db)):
+    """Track email reply (for webhook)."""
+    from uuid import UUID
+
+    try:
+        tid = UUID(target_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid target ID")
+    tracking = await crud.email_tracking.update_reply(db, target_id=tid)
+    await db.commit()
+    if not tracking:
+        raise HTTPException(status_code=404, detail="Tracking record not found")
+    return {"tracked": True, "replied_at": tracking.replied_at.isoformat()}
+
+
+# Analytics
+@app.get("/api/analytics/campaign/{campaign_id}")
+async def get_campaign_analytics(campaign_id: str, db: AsyncSession = Depends(get_db)):
+    """Get analytics for a campaign."""
+    from uuid import UUID
+    from datetime import date
+
+    try:
+        cid = UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign ID")
+
+    # Calculate latest analytics
+    targets = await crud.campaign_target.get_by_campaign(db, campaign_id=cid)
+    sent_count = len([t for t in targets if t.status == "sent"])
+
+    # Get tracking data
+    open_count = 0
+    reply_count = 0
+    for target in targets:
+        tracking = await crud.email_tracking.get_by_target(db, target_id=target.id)
+        if tracking:
+            open_count += tracking.opens_count
+            if tracking.replied_at:
+                reply_count += 1
+
+    open_rate = (open_count / sent_count * 100) if sent_count > 0 else 0
+    reply_rate = (reply_count / sent_count * 100) if sent_count > 0 else 0
+
+    # Save to analytics table
+    today = date.today()
+    analytics = await crud.analytics.create_or_update(
+        db,
+        campaign_id=cid,
+        date_val=today,
+        sent_count=sent_count,
+        open_count=open_count,
+        reply_count=reply_count,
+    )
+
+    return {
+        "campaign_id": campaign_id,
+        "date": today.isoformat(),
+        "sent_count": sent_count,
+        "open_count": open_count,
+        "reply_count": reply_count,
+        "open_rate": round(open_rate, 2),
+        "reply_rate": round(reply_rate, 2),
+    }
+
+
+@app.get("/api/analytics/dashboard")
+async def get_dashboard_analytics(db: AsyncSession = Depends(get_db)):
+    """Get overall dashboard analytics."""
+    campaigns = await crud.campaign.get_multi(db, limit=100)
+
+    total_campaigns = len(campaigns)
+    total_sent = 0
+    total_opens = 0
+    total_replies = 0
+
+    for campaign in campaigns:
+        targets = await crud.campaign_target.get_by_campaign(
+            db, campaign_id=campaign.id
+        )
+        for target in targets:
+            if target.status == "sent":
+                total_sent += 1
+                tracking = await crud.email_tracking.get_by_target(
+                    db, target_id=target.id
+                )
+                if tracking:
+                    total_opens += tracking.opens_count
+                    if tracking.replied_at:
+                        total_replies += 1
+
+    overall_open_rate = (total_opens / total_sent * 100) if total_sent > 0 else 0
+    overall_reply_rate = (total_replies / total_sent * 100) if total_sent > 0 else 0
+
+    return {
+        "total_campaigns": total_campaigns,
+        "total_sent_emails": total_sent,
+        "total_opens": total_opens,
+        "total_replies": total_replies,
+        "overall_open_rate": round(overall_open_rate, 2),
+        "overall_reply_rate": round(overall_reply_rate, 2),
+    }
 
 
 if __name__ == "__main__":
