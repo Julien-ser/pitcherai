@@ -1,0 +1,24 @@
+🚀 Starting Wiggum Worker for: pitcherai
+📍 Project Path: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai
+⏰ Started at: Sat Mar 21 11:46:26 PM EDT 2026
+⚡ Token Budget: 64000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━════
+
+📍 Iteration 17 at Sat Mar 21 11:46:26 PM EDT 2026...
+🤖 OpenCode processing: Integration testing
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+I'll complete the integration testing task. Let me first explore the project structure to understand what needs to be tested.
+[0m✱ [0mGlob "**/test*.py"[90m 7 matches[0m
+[0m✱ [0mGlob "**/*.py"[90m 23 matches[0m
+[0m✱ [0mGlob "**/*test.py"[90m 1 match[0m
+[0m→ [0mRead TASKS.md
+[0m→ [0mRead src/pitcherai/main.py
+[0m→ [0mRead src/pitcherai/models.py
+[0m→ [0mRead src/pitcherai/services/prospecting.py
+[0m→ [0mRead src/pitcherai/services/email_generation.py
+[0m→ [0mRead tests/conftest.py
+[0m→ [0mRead tests/unit/test_campaign.py
+📝 Log saved: logs/iteration-17.md
+📊 Token Usage: 4000 / Session: 4000 / 64000
