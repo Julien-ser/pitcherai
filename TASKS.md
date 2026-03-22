@@ -20,7 +20,7 @@
 
 ## Phase 3: Testing
 - [x] Write and run tests
-- [ ] Integration testing
+- [x] Integration testing
 - [ ] Bug fixes
 
 ## Phase 4: Documentation & Deployment

@@ -38,8 +38,8 @@ An autonomous agent that monitors startup funding announcements, identifies rele
 - [x] Implement main features ✅
 - [x] Integrate APIs and libraries ✅
 - [x] Build core logic ✅
-- [x] Write and run tests ✅ (in progress)
-- [ ] Integration testing
+- [x] Write and run tests ✅
+- [x] Integration testing ✅
 - [ ] Bug fixes
 - [ ] Write documentation
 - [ ] Prepare deployment
