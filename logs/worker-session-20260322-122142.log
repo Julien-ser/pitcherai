@@ -1655,3 +1655,167 @@ Perfect! Bug fixes completed successfully:
 **Next task:** Phase 4 - Write documentation
 📝 Log saved: logs/iteration-26.md
 📊 Token Usage: 11000 / Session: 43000 / 64000
+✅ Changes committed
+To https://github.com/Julien-ser/pitcherai.git
+   66bfa2b..720e7cc  wiggum/session-1774196501 -> wiggum/session-1774196501
+✅ Pushed to GitHub (branch: wiggum/session-1774196501)
+📊 Updated Tasks: 9/12 completed, 3 remaining
+   Next task: Write documentation...
+📍 Iteration 27 at Sun Mar 22 12:52:59 PM EDT 2026...
+🤖 OpenCode processing: Write documentation
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+I'll start by checking the current project state and understanding what documentation needs to be written. Let me read the TASKS.md and existing files.
+[0m→ [0mRead TASKS.md
+[0m→ [0mRead .agent_role
+[0m→ [0mRead README.md
+Let me check the project structure to understand what files exist and what documentation might be missing.
+[0m✱ [0mGlob "**/*.md"[90m 32 matches[0m
+[0m✱ [0mGlob "src/**/*.py"[90m 14 matches[0m
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/
+total 672
+drwxr-xr-x 12 julien julien   4096 Mar 22 12:52 .
+drwxr-xr-x 30 julien julien   4096 Mar 21 00:10 ..
+-rw-r--r--  1 julien julien      8 Mar 22 12:21 .agent_role
+-rw-r--r--  1 julien julien   5466 Mar 21 12:50 ARCHITECTURE.md
+-rw-r--r--  1 julien julien  53248 Mar 22 12:52 .coverage
+drwxr-xr-x  2 julien julien   4096 Mar 21 10:49 data
+-rw-r--r--  1 julien julien    863 Mar 21 12:50 .env.example
+drwxr-xr-x  7 julien julien   4096 Mar 22 12:52 .git
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:10 .github
+-rw-r--r--  1 julien julien      4 Mar 21 10:38 .gitignore
+drwxr-xr-x  2 julien julien   4096 Mar 21 23:53 htmlcov
+drwxr-xr-x  2 julien julien   4096 Mar 22 12:52 logs
+-rw-r--r--  1 julien julien   9218 Mar 21 00:10 prompt.txt
+-rw-r--r--  1 julien julien   2079 Mar 22 00:07 pyproject.toml
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:17 .pytest_cache
+-rw-r--r--  1 julien julien   6451 Mar 22 12:52 README.md
+drwxr-xr-x  4 julien julien   4096 Mar 21 01:07 .ruff_cache
+drwxr-xr-x  3 julien julien   4096 Mar 21 12:16 src
+-rw-r--r--  1 julien julien   2593 Mar 22 12:52 TASKS.md
+-rw-r--r--  1 julien julien   2595 Mar 21 12:36 TASKS_original.md
+-rw-r--r--  1 julien julien     95 Mar 21 12:42 tasks.py
+drwxr-xr-x  5 julien julien   4096 Mar 21 13:04 tests
+-rw-r--r--  1 julien julien 523785 Mar 22 00:06 uv.lock
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:23 .venv
+-rw-r--r--  1 julien julien      6 Mar 22 12:21 .worker_persistent_mode
+[0m
+Let me check the existing documentation to see what's already been written:
+[0m→ [0mRead .env.example
+[0m→ [0mRead ARCHITECTURE.md
+Let me check if there are any standard documentation files missing:
+[0m
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/ | grep -E '\.md$'
+-rw-r--r--  1 julien julien   5466 Mar 21 12:50 ARCHITECTURE.md
+-rw-r--r--  1 julien julien   6451 Mar 22 12:52 README.md
+-rw-r--r--  1 julien julien   2593 Mar 22 12:52 TASKS.md
+-rw-r--r--  1 julien julien   2595 Mar 21 12:36 TASKS_original.md
+[0m
+Good! I can see that the project has README.md and ARCHITECTURE.md, but is missing some standard documentation files. I'll create the essential documentation files for a mature Python project. Let me create CONTRIBUTING.md and CHANGELOG.md to complement the existing docs.
+
+First, let me check if there are any version or license details to include:
+[0m$ [0mls -la /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/ | grep -E '(LICENSE|COPYING)'
+[0m→ [0mRead pyproject.toml
+Perfect! Now I'll create comprehensive documentation files. Based on the existing README and ARCHITECTURE.md, I'll add:
+
+1. **CONTRIBUTING.md** - Guidelines for contributors
+2. **CHANGELOG.md** - Version history
+
+Let me create these files:
+[0m
+[0m← [0mWrite CONTRIBUTING.md
+Wrote file successfully.
+[0m
+Now let me create the CHANGELOG.md:
+[0m← [0mWrite CHANGELOG.md
+Wrote file successfully.
+[0m
+Now I'll update the README to reference these new documentation files and ensure it's comprehensive. Let me also check if I should add any other important documentation like a developer guide or API reference. I'll update the README with links to CONTRIBUTING.md and CHANGELOG.md:
+[0m← [0mEdit README.md
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+@@ -226,7 +226,14 @@
+ - `test.yml` - Runs tests, linting, type checks
+ - `deploy-staging.yml` - Deploy to staging
+ - `deploy-production.yml` - Deploy to production
+ 
++## Documentation
++
++- **README.md** - Project overview, quick start, and usage guide
++- **ARCHITECTURE.md** - System design, components, and data flow
++- **CONTRIBUTING.md** - Guidelines for contributors
++- **CHANGELOG.md** - Version history and release notes
++
+ ## License
+ 
+ MIT
+
+[0m
+Now let me update TASKS.md to mark the documentation task as completed and prepare for the next tasks:
+[0m← [0mEdit TASKS.md
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
+@@ -23,9 +23,9 @@
+ - [x] Integration testing
+ - [x] Bug fixes
+ 
+ ## Phase 4: Documentation & Deployment
+-- [ ] Write documentation
++- [x] Write documentation ✅
+ - [ ] Prepare deployment
+ - [ ] Deploy and validate
+ 
+ **Created:** Sat Mar 21 12:11:43 AM EDT 2026
+
+[0m
+Now let me check the status and commit all changes:
+[0m$ [0mgit status
+On branch wiggum/session-1774196501
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   README.md
+	modified:   TASKS.md
+	modified:   logs/worker-session-20260322-122142.log
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	CHANGELOG.md
+	CONTRIBUTING.md
+	logs/iteration-27.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[0m
+[0m$ [0mgit add CONTRIBUTING.md CHANGELOG.md README.md TASKS.md
+[0m
+[0m$ [0mgit commit -m "docs: add comprehensive documentation
+
+- Add CONTRIBUTING.md with contribution guidelines and workflow
+- Add CHANGELOG.md with version history tracking
+- Update README.md with links to all documentation
+- Mark documentation task as complete in TASKS.md
+
+This completes Phase 4 documentation requirements for the project."
+[wiggum/session-1774196501 6ea1cc6] docs: add comprehensive documentation
+ 4 files changed, 401 insertions(+), 1 deletion(-)
+ create mode 100644 CHANGELOG.md
+ create mode 100644 CONTRIBUTING.md
+[0m
+Let me add the documentation files and commit (excluding log files):
+Now let me push the changes to GitHub:
+[0m$ [0mgit push origin wiggum/session-1774196501
+To https://github.com/Julien-ser/pitcherai.git
+   720e7cc..6ea1cc6  wiggum/session-1774196501 -> wiggum/session-1774196501
+[0m
+Perfect! The documentation task is complete. Let me verify the workflow file exists since it's referenced in the README:
+[0m✱ [0mGlob ".github/workflows/*.yml"[90m 5 matches[0m
+Excellent! All workflows are in place. The documentation task is fully complete. I'll stop here as the task is done.
+
+**Task completed**: Documentation added (CONTRIBUTING.md, CHANGELOG.md, updated README.md, marked TASKS.md).
+📝 Log saved: logs/iteration-27.md
