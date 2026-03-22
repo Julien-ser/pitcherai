@@ -597,3 +597,101 @@ Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
  **Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
 
 [0m
+[0m$ [0mgit status
+On branch wiggum/session-1774196501
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   README.md
+	modified:   TASKS.md
+	modified:   logs/worker-session-20260322-122142.log
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.dockerignore
+	.env.production
+	DEPLOYMENT.md
+	Dockerfile
+	deploy/
+	docker-compose.yml
+	logs/iteration-28.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[0m
+[0m$ [0mgit add . && git commit -m "feat: add Docker deployment configuration and documentation"
+[wiggum/session-1774196501 968c0e8] feat: add Docker deployment configuration and documentation
+ 13 files changed, 1433 insertions(+), 5 deletions(-)
+ create mode 100644 .dockerignore
+ create mode 100644 .env.production
+ create mode 100644 DEPLOYMENT.md
+ create mode 100644 Dockerfile
+ create mode 100644 deploy/nginx-pitcherai.conf
+ create mode 100644 deploy/pitcherai-celery-beat.service
+ create mode 100644 deploy/pitcherai-celery-worker.service
+ create mode 100644 deploy/pitcherai-web.service
+ create mode 100644 docker-compose.yml
+ create mode 100644 logs/iteration-28.md
+[0m
+Now let me commit all changes:
+[0m$ [0mgit push origin main
+Everything up-to-date
+[0m
+Deployment preparation complete. All files created and committed.
+
+**Created files:**
+- Dockerfile, docker-compose.yml
+- .env.production, .dockerignore
+- deploy/ (systemd services, nginx config)
+- DEPLOYMENT.md
+
+**Updated:**
+- README.md (added deployment section)
+- TASKS.md (marked task [x])
+
+Next task: Deploy and validate
+```
+
+## TASKS.md After Iteration
+
+```markdown
+# pitcherai
+
+**Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
+
+**Why now:** AI agents are hot, but founders still waste hours on manual outreach. This automates the funnel from target discovery to first contact, while keeping it personalized enough to actually get replies. You could charge $99/mo for access, or take a success fee on raised capital.
+
+**Tech stack:** Use your own Wiggum loops (or OpenCode agents) to scrape, filter, draft, and send via Gmail API. Add a simple dashboard to review targets and override before sending.
+
+**Differentiator:** Not just a contact list — it's an autonomous outreach campaign manager that learns what works for your vertical.
+
+## Phase 1: Setup & Planning
+- [x] Review requirements and design architecture
+- [x] Set up development environment and dependencies
+- [x] Create project structure
+
+## Phase 2: Core Implementation
+- [x] Implement main features
+- [x] Integrate APIs and libraries
+- [x] Build core logic
+
+## Phase 3: Testing
+- [x] Write and run tests
+- [x] Integration testing
+- [x] Bug fixes
+
+## Phase 4: Documentation & Deployment
+- [x] Write documentation ✅
+- [x] Prepare deployment ✅
+- [ ] Deploy and validate
+
+**Created:** Sat Mar 21 12:11:43 AM EDT 2026
+**Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
+
+**Why now:** AI agents are hot, but founders still waste hours on manual outreach. This automates the funnel from target discovery to first contact, while keeping it personalized enough to actually get replies. You could charge $99/mo for access, or take a success fee on raised capital.
+
+**Tech stack:** Use your own Wiggum loops (or OpenCode agents) to scrape, filter, draft, and send via Gmail API. Add a simple dashboard to review targets and override before sending.
+
+**Differentiator:** Not just a contact list — it's an autonomous outreach campaign manager that learns what works for your vertical.
+```
+
+**Completed at:** Sun Mar 22 12:57:54 PM EDT 2026
