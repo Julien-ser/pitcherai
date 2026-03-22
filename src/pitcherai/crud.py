@@ -4,7 +4,7 @@ from sqlalchemy import select, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List, Any
 from uuid import UUID
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 from .models import (
     User,
@@ -79,7 +79,19 @@ class InvestorCRUD:
         self.model = Investor
 
     async def get(self, session: AsyncSession, id: UUID) -> Optional[Investor]:
-        result = await session.execute(select(Investor).where(Investor.id == id))
+        from sqlalchemy.orm import selectinload
+
+        result = await session.execute(
+            select(Investor)
+            .where(Investor.id == id)
+            .options(selectinload(Investor.investments))
+        )
+        return result.scalar_one_or_none()
+
+    async def get_by_email(
+        self, session: AsyncSession, email: str
+    ) -> Optional[Investor]:
+        result = await session.execute(select(Investor).where(Investor.email == email))
         return result.scalar_one_or_none()
 
     async def create(self, session: AsyncSession, obj_in: InvestorCreate) -> Investor:
@@ -228,7 +240,9 @@ class CampaignCRUD:
     async def start_campaign(
         self, session: AsyncSession, campaign_id: UUID
     ) -> Optional[Campaign]:
-        update_data = CampaignUpdate(status="active", started_at=datetime.utcnow())
+        update_data = CampaignUpdate(
+            status="active", started_at=datetime.now(timezone.utc)
+        )
         return await self.update(
             session, db_obj=await self.get(session, campaign_id), obj_in=update_data
         )
@@ -315,7 +329,9 @@ class CampaignTargetCRUD:
     async def mark_sent(
         self, session: AsyncSession, target_id: UUID
     ) -> Optional[CampaignTarget]:
-        update_data = CampaignTargetUpdate(status="sent", sent_at=datetime.utcnow())
+        update_data = CampaignTargetUpdate(
+            status="sent", sent_at=datetime.now(timezone.utc)
+        )
         return await self.update(
             session, db_obj=await self.get(session, target_id), obj_in=update_data
         )

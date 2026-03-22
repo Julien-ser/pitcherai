@@ -37,17 +37,30 @@ def mock_openai():
         mock_client.return_value = mock_async_client
 
         # Mock the chat completions create method
-        mock_async_client.chat.completions.create = AsyncMock(
-            return_value=MagicMock(
-                choices=[
-                    MagicMock(
-                        message=MagicMock(
-                            content="Enhanced email body with personalization"
-                        )
-                    )
-                ]
+        async def mock_create(*args, **kwargs):
+            # Extract investor name and startup name from the user prompt
+            messages = kwargs.get("messages", [])
+            investor_name = "Investor"
+            user_startup = "Startup"
+            if len(messages) > 1:
+                content = messages[1].get("content", "")
+                lines = content.split("\n")
+                for i, line in enumerate(lines):
+                    if "Investor:" in line:
+                        investor_name = line.split("Investor:")[1].strip()
+                    if line.strip() == "STARTUP:":
+                        if i + 1 < len(lines):
+                            next_line = lines[i + 1]
+                            user_startup = next_line.split(" - ")[0].strip()
+                            break
+
+            personalized_content = f"Hi {investor_name}, I'm from {user_startup} reaching out because I noticed your investments in AI and think our startup is a great fit."
+
+            return MagicMock(
+                choices=[MagicMock(message=MagicMock(content=personalized_content))]
             )
-        )
+
+        mock_async_client.chat.completions.create = mock_create
 
         yield mock_client
 
@@ -85,7 +98,7 @@ async def test_app():
     async def override_get_db():
         async with TestSessionLocal() as session:
             yield session
-            await session.rollback()
+            await session.commit()
 
     # Override dependencies
     app.dependency_overrides[get_db] = override_get_db
@@ -807,10 +820,11 @@ class TestAPIIntegration:
 class TestConcurrencyAndDataConsistency:
     """Test concurrent operations and data consistency."""
 
-    async def test_concurrent_campaign_creation(self, session: AsyncSession):
+    async def test_concurrent_campaign_creation(self, session: AsyncSession, engine):
         """Test creating multiple campaigns concurrently."""
         from pitcherai.schemas import UserCreate, TemplateCreate, CampaignCreate
         import asyncio
+        from sqlalchemy.ext.asyncio import async_sessionmaker
 
         # Create user and template
         user = await crud.user.create(
@@ -822,7 +836,6 @@ class TestConcurrencyAndDataConsistency:
                 niche="Tech",
             ),
         )
-
         template = await crud.template.create(
             session,
             obj_in=TemplateCreate(
@@ -832,20 +845,28 @@ class TestConcurrencyAndDataConsistency:
                 is_active=True,
             ),
         )
-
         await session.commit()
 
-        # Create multiple campaigns concurrently
+        # Create a new session factory for concurrent operations using the async engine
+        AsyncSessionFactory = async_sessionmaker(
+            bind=engine, class_=AsyncSession, expire_on_commit=False
+        )
+
+        # Create multiple campaigns concurrently with separate sessions
         async def create_campaign(index: int):
-            return await crud.campaign.create(
-                session,
-                obj_in=CampaignCreate(
-                    name=f"Concurrent Campaign {index}",
-                    user_id=user.id,
-                    template_id=template.id,
-                    target_criteria={},
-                ),
-            )
+            async with AsyncSessionFactory() as new_session:
+                campaign = await crud.campaign.create(
+                    new_session,
+                    obj_in=CampaignCreate(
+                        name=f"Concurrent Campaign {index}",
+                        user_id=user.id,
+                        template_id=template.id,
+                        target_criteria={},
+                    ),
+                )
+                await new_session.commit()
+                await new_session.refresh(campaign)
+                return campaign
 
         tasks = [create_campaign(i) for i in range(5)]
         campaigns = await asyncio.gather(*tasks)

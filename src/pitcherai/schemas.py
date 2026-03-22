@@ -146,6 +146,7 @@ class CampaignTargetUpdate(BaseModel):
     email_subject: Optional[str] = None
     email_body: Optional[str] = None
     scheduled_send_at: Optional[datetime] = None
+    sent_at: Optional[datetime] = None
     user_override_notes: Optional[str] = None
 
 

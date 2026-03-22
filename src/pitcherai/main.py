@@ -220,7 +220,14 @@ async def update_template(
 )
 async def create_campaign(campaign: CampaignCreate, db: AsyncSession = Depends(get_db)):
     """Create a new campaign."""
-    return await crud.campaign.create(db, obj_in=campaign)
+    return await campaign_service.create_campaign_with_targets(
+        db,
+        name=campaign.name,
+        user_id=campaign.user_id,
+        template_id=campaign.template_id,
+        target_criteria=campaign.target_criteria or {},
+        auto_generate_emails=True,
+    )
 
 
 @app.get("/api/campaigns", response_model=list[CampaignResponse])
