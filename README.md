@@ -30,7 +30,7 @@ An autonomous agent that monitors startup funding announcements, identifies rele
 
 ## Project Status
 
-**Phase 3**: Testing - Completed ✅
+**Phase 4**: Documentation & Deployment - In Progress
 
 - [x] Review requirements and design architecture
 - [x] Set up development environment and dependencies
@@ -41,8 +41,8 @@ An autonomous agent that monitors startup funding announcements, identifies rele
 - [x] Write and run tests ✅
 - [x] Integration testing ✅
 - [x] Bug fixes ✅
-- [ ] Write documentation
-- [ ] Prepare deployment
+- [x] Write documentation ✅
+- [x] Prepare deployment ✅
 - [ ] Deploy and validate
 
 See [TASKS.md](TASKS.md) for full task list.
@@ -130,7 +130,45 @@ EMAIL_FREQUENCY=1
 
 See `.env.example` for all available options.
 
-## API Endpoints
+## Deployment
+
+PitcherAI can be deployed using Docker (recommended) or on bare metal.
+
+### Docker Deployment (Recommended)
+
+1. Create a `.env` file from the production template:
+```bash
+cp .env.production .env
+```
+
+2. Edit `.env` and add your API keys:
+   - `SECRET_KEY`: Generate a strong, random secret (min 32 characters)
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `GMAIL_CLIENT_ID/SECRET/REFRESH_TOKEN`: Gmail API credentials (optional)
+   - Database and Redis passwords
+
+3. Start all services with Docker Compose:
+```bash
+docker-compose up -d
+```
+
+4. Initialize the database:
+```bash
+docker-compose exec web uv run python -c "from pitcherai.database import init_db; import asyncio; asyncio.run(init_db())"
+```
+
+5. Access the services:
+   - API Documentation: http://localhost:8000/docs
+   - API Endpoints: http://localhost:8000
+   - Streamlit Dashboard: http://localhost:8501
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive deployment options including:
+- Manual deployment with systemd
+- Cloud deployments (Heroku, Railway, Fly.io)
+- Database migrations and maintenance
+- Production checklist and troubleshooting
+
+## CI/CD
 
 ### Users
 - `POST /api/users` - Create user
@@ -232,6 +270,7 @@ GitHub Actions workflows are configured in `.github/workflows/`:
 - **README.md** - Project overview, quick start, and usage guide
 - **ARCHITECTURE.md** - System design, components, and data flow
 - **CONTRIBUTING.md** - Guidelines for contributors
+- **DEPLOYMENT.md** - Deployment and operations guide
 - **CHANGELOG.md** - Version history and release notes
 
 ## License

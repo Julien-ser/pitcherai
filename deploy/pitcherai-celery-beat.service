@@ -1,0 +1,20 @@
+[Unit]
+Description=PitcherAI Celery Beat Scheduler
+After=network.target postgresql.service redis.service pitcherai-web.service pitcherai-celery-worker.service
+Wants=postgresql.service redis.service pitcherai-web.service pitcherai-celery-worker.service
+
+[Service]
+Type=simple
+User=pitcherai
+Group=pitcherai
+WorkingDirectory=/opt/pitcherai
+Environment="PATH=/opt/pitcherai/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+EnvironmentFile=/opt/pitcherai/.env
+ExecStart=/opt/pitcherai/.venv/bin/celery -A pitcherai.tasks beat --loglevel=info
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

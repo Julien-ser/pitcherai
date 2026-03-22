@@ -1819,3 +1819,214 @@ Excellent! All workflows are in place. The documentation task is fully complete.
 
 **Task completed**: Documentation added (CONTRIBUTING.md, CHANGELOG.md, updated README.md, marked TASKS.md).
 📝 Log saved: logs/iteration-27.md
+📊 Token Usage: 5500 / Session: 48500 / 64000
+Unstaged changes after reset:
+M	logs/worker-session-20260322-122142.log
+✅ Changes committed
+To https://github.com/Julien-ser/pitcherai.git
+   6ea1cc6..5ee4ae8  wiggum/session-1774196501 -> wiggum/session-1774196501
+✅ Pushed to GitHub (branch: wiggum/session-1774196501)
+📊 Updated Tasks: 10/12 completed, 2 remaining
+   Next task: Prepare deployment...
+📍 Iteration 28 at Sun Mar 22 12:55:25 PM EDT 2026...
+🤖 OpenCode processing: Prepare deployment
+[0m
+> build · stepfun/step-3.5-flash:free
+[0m
+I'll help you prepare deployment for the PitcherAI project. Let me first examine the current state and understand what needs to be done.
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/package.json
+[0m→ [0mRead TASKS.md
+[0m→ [0mRead README.md
+[0m✱ [0mGlob "src/**/*"[90m 36 matches[0m
+[0m✱ [0mGlob "Dockerfile"[90m 0 matches[0m
+[0m✱ [0mGlob "docker-compose*.yml"[90m 0 matches[0m
+[0m→ [0mRead pyproject.toml
+Let me check the existing project files to understand what needs to be prepared for deployment:
+[0m
+[0m$ [0mls -la
+total 684
+drwxr-xr-x 12 julien julien   4096 Mar 22 12:54 .
+drwxr-xr-x 30 julien julien   4096 Mar 21 00:10 ..
+-rw-r--r--  1 julien julien      8 Mar 22 12:21 .agent_role
+-rw-r--r--  1 julien julien   5466 Mar 21 12:50 ARCHITECTURE.md
+-rw-r--r--  1 julien julien   2925 Mar 22 12:54 CHANGELOG.md
+-rw-r--r--  1 julien julien   7413 Mar 22 12:54 CONTRIBUTING.md
+-rw-r--r--  1 julien julien  53248 Mar 22 12:52 .coverage
+drwxr-xr-x  2 julien julien   4096 Mar 21 10:49 data
+-rw-r--r--  1 julien julien    863 Mar 21 12:50 .env.example
+drwxr-xr-x  7 julien julien   4096 Mar 22 12:55 .git
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:10 .github
+-rw-r--r--  1 julien julien      4 Mar 21 10:38 .gitignore
+drwxr-xr-x  2 julien julien   4096 Mar 21 23:53 htmlcov
+drwxr-xr-x  2 julien julien   4096 Mar 22 12:55 logs
+-rw-r--r--  1 julien julien   9218 Mar 21 00:10 prompt.txt
+-rw-r--r--  1 julien julien   2079 Mar 22 00:07 pyproject.toml
+drwxr-xr-x  3 julien julien   4096 Mar 21 00:17 .pytest_cache
+-rw-r--r--  1 julien julien   6707 Mar 22 12:54 README.md
+drwxr-xr-x  4 julien julien   4096 Mar 21 01:07 .ruff_cache
+drwxr-xr-x  3 julien julien   4096 Mar 21 12:16 src
+-rw-r--r--  1 julien julien   2597 Mar 22 12:54 TASKS.md
+-rw-r--r--  1 julien julien   2595 Mar 21 12:36 TASKS_original.md
+-rw-r--r--  1 julien julien     95 Mar 21 12:42 tasks.py
+drwxr-xr-x  5 julien julien   4096 Mar 21 13:04 tests
+-rw-r--r--  1 julien julien 523785 Mar 22 00:06 uv.lock
+drwxr-xr-x  7 julien julien   4096 Mar 21 12:23 .venv
+-rw-r--r--  1 julien julien      6 Mar 22 12:21 .worker_persistent_mode
+[0m
+Now I'll prepare deployment for the project. The task includes creating Docker configuration and deployment files for this Python/FastAPI application. Let me start by creating the necessary files:
+[0m← [0mWrite Dockerfile
+Wrote file successfully.
+[0m
+[0m← [0mWrite .env.production
+Wrote file successfully.
+[0m
+[0m← [0mWrite docker-compose.yml
+Wrote file successfully.
+[0m
+Now I'll create a .dockerignore file and add deployment documentation:
+[0m← [0mWrite .dockerignore
+Wrote file successfully.
+[0m
+[0m← [0mWrite DEPLOYMENT.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite deploy/pitcherai-celery-worker.service
+Wrote file successfully.
+[0m
+[0m← [0mWrite deploy/pitcherai-celery-beat.service
+Wrote file successfully.
+[0m
+[0m← [0mWrite deploy/nginx-pitcherai.conf
+Wrote file successfully.
+[0m
+[0m← [0mWrite deploy/pitcherai-web.service
+Wrote file successfully.
+[0m
+Now I'll update the README.md to include deployment instructions and mark the task as complete:
+[0m→ [0mRead README.md[90m [limit=50, offset=200][0m
+[0m
+[0m← [0mEdit README.md
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+@@ -129,10 +129,48 @@
+ ```
+ 
+ See `.env.example` for all available options.
+ 
+-## API Endpoints
++## Deployment
+ 
++PitcherAI can be deployed using Docker (recommended) or on bare metal.
++
++### Docker Deployment (Recommended)
++
++1. Create a `.env` file from the production template:
++```bash
++cp .env.production .env
++```
++
++2. Edit `.env` and add your API keys:
++   - `SECRET_KEY`: Generate a strong, random secret (min 32 characters)
++   - `OPENAI_API_KEY`: Your OpenAI API key
++   - `GMAIL_CLIENT_ID/SECRET/REFRESH_TOKEN`: Gmail API credentials (optional)
++   - Database and Redis passwords
++
++3. Start all services with Docker Compose:
++```bash
++docker-compose up -d
++```
++
++4. Initialize the database:
++```bash
++docker-compose exec web uv run python -c "from pitcherai.database import init_db; import asyncio; asyncio.run(init_db())"
++```
++
++5. Access the services:
++   - API Documentation: http://localhost:8000/docs
++   - API Endpoints: http://localhost:8000
++   - Streamlit Dashboard: http://localhost:8501
++
++See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive deployment options including:
++- Manual deployment with systemd
++- Cloud deployments (Heroku, Railway, Fly.io)
++- Database migrations and maintenance
++- Production checklist and troubleshooting
++
++## CI/CD
++
+ ### Users
+ - `POST /api/users` - Create user
+ - `GET /api/users/{id}` - Get user
+ - `PUT /api/users/{id}` - Update user
+
+[0m
+[0m← [0mEdit README.md
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+@@ -269,8 +269,9 @@
+ 
+ - **README.md** - Project overview, quick start, and usage guide
+ - **ARCHITECTURE.md** - System design, components, and data flow
+ - **CONTRIBUTING.md** - Guidelines for contributors
++- **DEPLOYMENT.md** - Deployment and operations guide
+ - **CHANGELOG.md** - Version history and release notes
+ 
+ ## License
+ 
+
+[0m
+[0m← [0mEdit README.md
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
+@@ -29,9 +29,9 @@
+ - **CI/CD**: GitHub Actions
+ 
+ ## Project Status
+ 
+-**Phase 3**: Testing - Completed ✅
++**Phase 4**: Documentation & Deployment - In Progress
+ 
+ - [x] Review requirements and design architecture
+ - [x] Set up development environment and dependencies
+ - [x] Create project structure
+@@ -40,10 +40,10 @@
+ - [x] Build core logic ✅
+ - [x] Write and run tests ✅
+ - [x] Integration testing ✅
+ - [x] Bug fixes ✅
+-- [ ] Write documentation
+-- [ ] Prepare deployment
++- [x] Write documentation ✅
++- [x] Prepare deployment ✅
+ - [ ] Deploy and validate
+ 
+ See [TASKS.md](TASKS.md) for full task list.
+ 
+
+[0m
+Now I'll mark the task as complete in TASKS.md:
+[0m← [0mEdit TASKS.md
+Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
+===================================================================
+--- /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
++++ /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/TASKS.md
+@@ -24,9 +24,9 @@
+ - [x] Bug fixes
+ 
+ ## Phase 4: Documentation & Deployment
+ - [x] Write documentation ✅
+-- [ ] Prepare deployment
++- [x] Prepare deployment ✅
+ - [ ] Deploy and validate
+ 
+ **Created:** Sat Mar 21 12:11:43 AM EDT 2026
+ **Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
+
+[0m
