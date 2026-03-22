@@ -80,6 +80,17 @@ class EmailGenerationService:
             custom_vars=custom_vars or {},
         )
 
+        # Ensure custom variables are preserved in the final body
+        if custom_vars:
+            missing_values = [
+                str(value)
+                for value in custom_vars.values()
+                if str(value) not in enhanced_body
+            ]
+            if missing_values:
+                # Fallback to pre-AI template which includes custom vars
+                enhanced_body = body_template
+
         return subject, enhanced_body
 
     def _build_context(

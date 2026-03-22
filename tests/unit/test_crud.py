@@ -270,6 +270,13 @@ class TestCampaignCRUD:
         self, session: AsyncSession, sample_campaign: dict, sample_user: dict
     ):
         """Test getting campaigns by user."""
+        # Create the sample user in the database
+        db_user = await user.create(session, obj_in=UserCreate(**sample_user))
+
+        # Create a campaign for the sample user
+        campaign_data = CampaignCreate(**sample_campaign)
+        await campaign.create(session, obj_in=campaign_data)
+
         # Create another campaign for a different user
         other_user_data = UserCreate(
             email="other@example.com",

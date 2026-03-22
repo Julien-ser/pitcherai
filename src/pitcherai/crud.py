@@ -255,7 +255,9 @@ class CampaignCRUD:
     async def complete_campaign(
         self, session: AsyncSession, campaign_id: UUID
     ) -> Optional[Campaign]:
-        update_data = CampaignUpdate(status="completed", completed_at=datetime.utcnow())
+        update_data = CampaignUpdate(
+            status="completed", completed_at=datetime.now(timezone.utc)
+        )
         return await self.update(
             session, db_obj=await self.get(session, campaign_id), obj_in=update_data
         )
@@ -376,7 +378,7 @@ class EmailTrackingCRUD:
         tracking = await self.get_by_target(session, target_id)
         if tracking:
             tracking.opens_count += 1
-            tracking.last_opened_at = datetime.utcnow()
+            tracking.last_opened_at = datetime.now(timezone.utc)
             await session.flush()
             await session.refresh(tracking)
         return tracking
@@ -386,7 +388,7 @@ class EmailTrackingCRUD:
     ) -> Optional[EmailTracking]:
         tracking = await self.get_by_target(session, target_id)
         if tracking:
-            tracking.replied_at = datetime.utcnow()
+            tracking.replied_at = datetime.now(timezone.utc)
             await session.flush()
             await session.refresh(tracking)
         return tracking
