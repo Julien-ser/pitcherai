@@ -4,10 +4,12 @@ from typing import Optional, List, Dict, Any
 from uuid import UUID
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, cast, String
 
 from .. import crud
 from .email_generation import email_generator
-from ..models import CampaignTarget, Investor, User, Template
+from ..models import Campaign, CampaignTarget, Investor, User, Template, Investment
+from ..schemas import CampaignCreate, CampaignTargetCreate, CampaignTargetUpdate
 
 
 class CampaignService:
@@ -79,28 +81,31 @@ class CampaignService:
         self, session: AsyncSession, criteria: Dict[str, Any]
     ) -> List[Investor]:
         """Find investors matching the given criteria."""
-        query = session.query(Investor)
+        stmt = select(Investor)
 
         # Filter by investor type
         if "investor_types" in criteria:
             types = criteria["investor_types"]
             if types:
-                query = query.filter(Investor.investor_type.in_(types))
+                stmt = stmt.where(Investor.investor_type.in_(types))
 
         # Filter by focus area
         if "focus_areas" in criteria:
             focus_areas = criteria["focus_areas"]
             for area in focus_areas:
-                query = query.filter(Investor.focus_areas.contains([area]))
+                # Use cast to String for cross-database JSON search
+                stmt = stmt.where(
+                    cast(Investor.focus_areas, String).contains(f'"{area}"')
+                )
 
         # Filter by location
         if "location" in criteria and criteria["location"]:
-            query = query.filter(Investor.location.ilike(f"%{criteria['location']}%"))
+            stmt = stmt.where(Investor.location.ilike(f"%{criteria['location']}%"))
 
         # Pagination
-        query = query.limit(100)  # Reasonable limit
+        stmt = stmt.limit(100)  # Reasonable limit
 
-        result = await session.execute(query)
+        result = await session.execute(stmt)
         return result.scalars().all()
 
     async def _generate_emails_for_campaign(

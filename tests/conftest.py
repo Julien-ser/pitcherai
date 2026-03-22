@@ -48,7 +48,7 @@ def event_loop() -> Generator:
     loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def engine():
     """Create a test database engine."""
     from sqlalchemy.ext.asyncio import create_async_engine
