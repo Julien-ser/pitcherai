@@ -1,6 +1,6 @@
 """Configuration management using Pydantic Settings."""
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
 
@@ -70,9 +70,7 @@ class Settings(BaseSettings):
         default="redis://localhost:6379/2", description="Celery result backend"
     )
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 settings = Settings()
