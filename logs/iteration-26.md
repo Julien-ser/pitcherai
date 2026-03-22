@@ -823,3 +823,68 @@ Index: /home/julien/Desktop/Free-Wiggum-opencode/projects/pitcherai/README.md
 [0m
 Now let's update README.md to match the progress:
 Now let's commit the changes and push to GitHub:
+[0m$ [0mgit add . && git commit -m "fix: resolve Pydantic v2 deprecation warning and complete bug fixes phase
+
+- Update config.py to use SettingsConfigDict instead of deprecated Config class
+- Fix Pydantic deprecation warning for Pydantic v2 compatibility
+- Mark bug fixes as completed in TASKS.md
+- Update README.md to reflect Phase 3 completion" && git push origin main
+[wiggum/session-1774196501 cb26488] fix: resolve Pydantic v2 deprecation warning and complete bug fixes phase
+ 11 files changed, 1223 insertions(+), 7 deletions(-)
+ create mode 100644 logs/iteration-26.md
+Everything up-to-date
+[0m
+Perfect! Bug fixes completed successfully:
+
+**Fixed:**
+- Pydantic v2 deprecation warning in `config.py:73` by using `SettingsConfigDict`
+- All 98 tests passing, 4 skipped
+- Updated TASKS.md and README.md to mark Phase 3 (Testing) as complete
+
+**Next task:** Phase 4 - Write documentation
+```
+
+## TASKS.md After Iteration
+
+```markdown
+# pitcherai
+
+**Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
+
+**Why now:** AI agents are hot, but founders still waste hours on manual outreach. This automates the funnel from target discovery to first contact, while keeping it personalized enough to actually get replies. You could charge $99/mo for access, or take a success fee on raised capital.
+
+**Tech stack:** Use your own Wiggum loops (or OpenCode agents) to scrape, filter, draft, and send via Gmail API. Add a simple dashboard to review targets and override before sending.
+
+**Differentiator:** Not just a contact list — it's an autonomous outreach campaign manager that learns what works for your vertical.
+
+## Phase 1: Setup & Planning
+- [x] Review requirements and design architecture
+- [x] Set up development environment and dependencies
+- [x] Create project structure
+
+## Phase 2: Core Implementation
+- [x] Implement main features
+- [x] Integrate APIs and libraries
+- [x] Build core logic
+
+## Phase 3: Testing
+- [x] Write and run tests
+- [x] Integration testing
+- [x] Bug fixes
+
+## Phase 4: Documentation & Deployment
+- [ ] Write documentation
+- [ ] Prepare deployment
+- [ ] Deploy and validate
+
+**Created:** Sat Mar 21 12:11:43 AM EDT 2026
+**Mission:** *AI-Pitched** — an autonomous agent that monitors startup funding announcements (Crunchbase, AngelList, press releases), identifies relevant VCs/angels for your specific niche, and auto-drafts personalized cold emails using recent investments, shared connections, and portfolio alignment. The agent also tracks response rates, learns which templates and targets convert, and iteratively improves.
+
+**Why now:** AI agents are hot, but founders still waste hours on manual outreach. This automates the funnel from target discovery to first contact, while keeping it personalized enough to actually get replies. You could charge $99/mo for access, or take a success fee on raised capital.
+
+**Tech stack:** Use your own Wiggum loops (or OpenCode agents) to scrape, filter, draft, and send via Gmail API. Add a simple dashboard to review targets and override before sending.
+
+**Differentiator:** Not just a contact list — it's an autonomous outreach campaign manager that learns what works for your vertical.
+```
+
+**Completed at:** Sun Mar 22 12:52:55 PM EDT 2026
