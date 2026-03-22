@@ -221,10 +221,11 @@ class ProspectingService:
                 data = response.json()
 
                 for investment in data.get("entities", {}).values():
-                    await self._add_investment_from_crunchbase(
+                    added = await self._add_investment_from_crunchbase(
                         session, investor_id, investment
                     )
-                    investments_added += 1
+                    if added:
+                        investments_added += 1
             except Exception as e:
                 print(f"Error fetching investments from Crunchbase: {e}")
 
@@ -232,8 +233,12 @@ class ProspectingService:
 
     async def _add_investment_from_crunchbase(
         self, session: AsyncSession, investor_id: UUID, investment_data: Dict[str, Any]
-    ):
-        """Add an investment from Crunchbase data."""
+    ) -> bool:
+        """Add an investment from Crunchbase data.
+
+        Returns:
+            True if investment was added, False otherwise.
+        """
         try:
             props = investment_data.get("properties", {})
             startup_name = props.get("company_name", "")
@@ -250,17 +255,44 @@ class ProspectingService:
                     )
                 )
                 if not existing.scalar_one_or_none():
+                    # Parse the date string to a date object if provided
+                    announced_date_str = props.get("announced_date")
+                    investment_date = None
+                    if announced_date_str:
+                        try:
+                            # Handle both date-only and datetime strings
+                            from datetime import datetime
+
+                            if "T" in announced_date_str:
+                                # ISO datetime format
+                                dt = datetime.fromisoformat(
+                                    announced_date_str.replace("Z", "+00:00")
+                                )
+                                investment_date = dt.date()
+                            else:
+                                # Simple date format (YYYY-MM-DD)
+                                investment_date = datetime.strptime(
+                                    announced_date_str, "%Y-%m-%d"
+                                ).date()
+                        except (ValueError, TypeError):
+                            investment_date = None
+
                     investment = Investment(
                         investor_id=investor_id,
                         startup_name=startup_name,
                         round_type=round_type,
-                        investment_date=props.get("announced_date"),
+                        investment_date=investment_date,
                         raw_data=investment_data,
                     )
                     session.add(investment)
                     await session.flush()
+                    return True
+            return False
         except Exception as e:
             print(f"Error adding investment: {e}")
+            # Rollback to recover session state
+            await session.rollback()
+            return False
 
 
 # Global instance

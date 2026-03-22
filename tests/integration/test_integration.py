@@ -4,7 +4,7 @@ These tests verify the complete workflow from investor import to campaign execut
 """
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch, PropertyMock
 from uuid import UUID, uuid4
 from datetime import datetime, date
 from fastapi.testclient import TestClient
@@ -24,6 +24,79 @@ from pitcherai.schemas import (
     CampaignCreate,
     CampaignTargetCreate,
 )
+
+
+@pytest.fixture(autouse=True)
+def mock_openai():
+    """Mock OpenAI client for all integration tests to avoid needing real API key."""
+    with patch.object(
+        EmailGenerationService, "client", new_callable=PropertyMock
+    ) as mock_client:
+        # Create a mock async client
+        mock_async_client = AsyncMock()
+        mock_client.return_value = mock_async_client
+
+        # Mock the chat completions create method
+        mock_async_client.chat.completions.create = AsyncMock(
+            return_value=MagicMock(
+                choices=[
+                    MagicMock(
+                        message=MagicMock(
+                            content="Enhanced email body with personalization"
+                        )
+                    )
+                ]
+            )
+        )
+
+        yield mock_client
+
+
+@pytest.fixture
+async def test_app():
+    """Create a test app with overridden database."""
+    from pitcherai.main import app
+    from pitcherai.database import get_db, engine as real_engine, Base
+    from sqlalchemy.ext.asyncio import (
+        create_async_engine,
+        AsyncSession,
+        async_sessionmaker,
+    )
+    from sqlalchemy.pool import StaticPool
+
+    # Create test engine with SQLite
+    test_engine = create_async_engine(
+        "sqlite+aiosqlite:///:memory:",
+        echo=False,
+        poolclass=StaticPool,
+    )
+
+    # Create tables
+    async with test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    # Create test session
+    TestSessionLocal = async_sessionmaker(
+        bind=test_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    async def override_get_db():
+        async with TestSessionLocal() as session:
+            yield session
+            await session.rollback()
+
+    # Override dependencies
+    app.dependency_overrides[get_db] = override_get_db
+
+    # Patch the global engine to use test engine
+    with patch("pitcherai.database.engine", test_engine):
+        yield app
+
+    # Cleanup
+    app.dependency_overrides.clear()
+    await test_engine.dispose()
 
 
 class TestFullCampaignLifecycle:
@@ -255,8 +328,8 @@ class TestInvestorImportAndEnrichment:
         mock_angellist.raise_for_status = MagicMock()
         prospecting.client.get.side_effect = [mock_crunchbase, mock_angellist]
 
-        # Temporarily patch the API keys as set
-        with patch("pitcherai.config.settings") as mock_settings:
+        # Temporarily patch the API keys as set (patch where they are used)
+        with patch("pitcherai.services.prospecting.settings") as mock_settings:
             mock_settings.crunchbase_api_key = "test_key"
             mock_settings.angellist_access_token = "test_token"
 
@@ -633,16 +706,12 @@ class TestServiceInteractions:
 class TestAPIIntegration:
     """Test API endpoints integration."""
 
-    async def test_full_api_workflow(self, session: AsyncSession):
+    async def test_full_api_workflow(self, test_app):
         """Test complete API workflow."""
-        from pitcherai.main import app, get_db
-        from fastapi.testclient import TestClient
+        from pitcherai.main import app
 
-        # Override get_db dependency to use our test session
-        async def override_get_db():
-            yield session
-
-        app.dependency_overrides[get_db] = override_get_db
+        # We already have test_app with overridden dependencies
+        app = test_app
 
         # Build list of created object IDs
         user_id = None
@@ -650,97 +719,89 @@ class TestAPIIntegration:
         investor_id = None
         campaign_id = None
 
-        try:
-            with TestClient(app) as client:
-                # 1. Create user via API
-                user_response = client.post(
-                    "/api/users",
-                    json={
-                        "email": "api@test.com",
-                        "startup_name": "API Test Startup",
-                        "startup_description": "Testing the API",
-                        "niche": "AI",
-                    },
-                )
-                assert user_response.status_code == 201
-                user_data = user_response.json()
-                user_id = user_data["id"]
+        with TestClient(app) as client:
+            # 1. Create user via API
+            user_response = client.post(
+                "/api/users",
+                json={
+                    "email": "api@test.com",
+                    "startup_name": "API Test Startup",
+                    "startup_description": "Testing the API",
+                    "niche": "AI",
+                },
+            )
+            assert user_response.status_code == 201
+            user_data = user_response.json()
+            user_id = user_data["id"]
 
-                # 2. Create template via API
-                template_response = client.post(
-                    "/api/templates",
-                    json={
-                        "name": "API Template",
-                        "subject_template": "Hello {{investor_name}}",
-                        "body_template": "Hi {{investor_name}}, we're {{user_startup}}",
-                        "is_active": True,
-                    },
-                )
-                assert template_response.status_code == 201
-                template_data = template_response.json()
-                template_id = template_data["id"]
+            # 2. Create template via API
+            template_response = client.post(
+                "/api/templates",
+                json={
+                    "name": "API Template",
+                    "subject_template": "Hello {{investor_name}}",
+                    "body_template": "Hi {{investor_name}}, we're {{user_startup}}",
+                    "is_active": True,
+                },
+            )
+            assert template_response.status_code == 201
+            template_data = template_response.json()
+            template_id = template_data["id"]
 
-                # 3. Create investor via API
-                investor_response = client.post(
-                    "/api/investors",
-                    json={
-                        "name": "API Investor",
-                        "investor_type": "vc",
-                        "firm_name": "API Ventures",
-                        "email": "api@vc.com",
-                        "focus_areas": ["AI", "Tech"],
-                        "location": "Online",
-                        "source": "api",
-                    },
-                )
-                assert investor_response.status_code == 201
-                investor_data = investor_response.json()
-                investor_id = investor_data["id"]
+            # 3. Create investor via API
+            investor_response = client.post(
+                "/api/investors",
+                json={
+                    "name": "API Investor",
+                    "investor_type": "vc",
+                    "firm_name": "API Ventures",
+                    "email": "api@vc.com",
+                    "focus_areas": ["AI", "Tech"],
+                    "location": "Online",
+                    "source": "api",
+                },
+            )
+            assert investor_response.status_code == 201
+            investor_data = investor_response.json()
+            investor_id = investor_data["id"]
 
-                # 4. Create campaign via API
-                campaign_response = client.post(
-                    "/api/campaigns",
-                    json={
-                        "name": "API Campaign",
-                        "user_id": user_id,
-                        "template_id": template_id,
-                        "target_criteria": {"investor_types": ["vc"]},
-                    },
-                )
-                assert campaign_response.status_code == 201
-                campaign_data = campaign_response.json()
-                campaign_id = campaign_data["id"]
+            # 4. Create campaign via API
+            campaign_response = client.post(
+                "/api/campaigns",
+                json={
+                    "name": "API Campaign",
+                    "user_id": user_id,
+                    "template_id": template_id,
+                    "target_criteria": {"investor_types": ["vc"]},
+                },
+            )
+            assert campaign_response.status_code == 201
+            campaign_data = campaign_response.json()
+            campaign_id = campaign_data["id"]
 
-                # 5. Get campaign via API
-                get_campaign_response = client.get(f"/api/campaigns/{campaign_id}")
-                assert get_campaign_response.status_code == 200
+            # 5. Get campaign via API
+            get_campaign_response = client.get(f"/api/campaigns/{campaign_id}")
+            assert get_campaign_response.status_code == 200
 
-                # 6. Get campaign targets
-                targets_response = client.get(f"/api/campaigns/{campaign_id}/targets")
-                assert targets_response.status_code == 200
-                targets_data = targets_response.json()
-                assert len(targets_data["targets"]) >= 1
+            # 6. Get campaign targets
+            targets_response = client.get(f"/api/campaigns/{campaign_id}/targets")
+            assert targets_response.status_code == 200
+            targets_data = targets_response.json()
+            assert len(targets_data["targets"]) >= 1
 
-                # 7. Get investors list
-                investors_response = client.get("/api/investors")
-                assert investors_response.status_code == 200
-                investors_list = investors_response.json()
-                assert len(investors_list) >= 1
+            # 7. Get investors list
+            investors_response = client.get("/api/investors")
+            assert investors_response.status_code == 200
+            investors_list = investors_response.json()
+            assert len(investors_list) >= 1
 
-                # 8. Get analytics
-                analytics_response = client.get(
-                    f"/api/analytics/campaign/{campaign_id}"
-                )
-                assert analytics_response.status_code == 200
-                analytics_data = analytics_response.json()
-                assert "sent_count" in analytics_data
+            # 8. Get analytics
+            analytics_response = client.get(f"/api/analytics/campaign/{campaign_id}")
+            assert analytics_response.status_code == 200
+            analytics_data = analytics_response.json()
+            assert "sent_count" in analytics_data
 
-                print("✅ API integration test passed!")
-
-        finally:
-            # Clean up dependency override
-            if get_db in app.dependency_overrides:
-                del app.dependency_overrides[get_db]
+            print("✅ API integration test passed!")
 
 
 class TestConcurrencyAndDataConsistency:
