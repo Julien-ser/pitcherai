@@ -227,6 +227,13 @@ GitHub Actions workflows are configured in `.github/workflows/`:
 - `deploy-staging.yml` - Deploy to staging
 - `deploy-production.yml` - Deploy to production
 
+## Documentation
+
+- **README.md** - Project overview, quick start, and usage guide
+- **ARCHITECTURE.md** - System design, components, and data flow
+- **CONTRIBUTING.md** - Guidelines for contributors
+- **CHANGELOG.md** - Version history and release notes
+
 ## License
 
 MIT
