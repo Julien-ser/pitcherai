@@ -14,7 +14,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass
+    id: Optional[UUID] = None
 
 
 class UserUpdate(BaseModel):
@@ -44,6 +44,7 @@ class InvestorBase(BaseModel):
 
 
 class InvestorCreate(InvestorBase):
+    id: Optional[UUID] = None
     source: str
     raw_data: Optional[dict] = None
 
@@ -77,7 +78,7 @@ class TemplateBase(BaseModel):
 
 
 class TemplateCreate(TemplateBase):
-    pass
+    id: Optional[UUID] = None
 
 
 class TemplateUpdate(BaseModel):
@@ -104,6 +105,7 @@ class CampaignBase(BaseModel):
 
 
 class CampaignCreate(CampaignBase):
+    id: Optional[UUID] = None
     status: Optional[Literal["draft", "active", "paused", "completed"]] = "draft"
 
 

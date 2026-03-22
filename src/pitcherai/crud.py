@@ -136,13 +136,18 @@ class InvestorCRUD:
     async def search_by_focus(
         self, session: AsyncSession, focus_area: str, skip: int = 0, limit: int = 100
     ) -> List[Investor]:
-        result = await session.execute(
-            select(Investor)
-            .where(Investor.focus_areas.contains([focus_area]))
-            .offset(skip)
-            .limit(limit)
-        )
-        return result.scalars().all()
+        # Fetch all investors and filter in Python for SQLite compatibility
+        result = await session.execute(select(Investor))
+        investors = result.scalars().all()
+        filtered = [
+            inv
+            for inv in investors
+            if inv.focus_areas and focus_area in inv.focus_areas
+        ]
+        # Apply pagination
+        start = max(skip, 0)
+        end = start + limit if limit is not None else None
+        return filtered[start:end]
 
 
 # Template CRUD

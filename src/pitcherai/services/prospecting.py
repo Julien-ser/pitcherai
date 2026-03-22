@@ -62,10 +62,13 @@ class ProspectingService:
         """Parse Crunchbase entity into investor data."""
         try:
             properties = entity.get("properties", {})
+            name = properties.get("name")
+            if not name:
+                return None
             return {
-                "name": properties.get("name", ""),
+                "name": name,
                 "investor_type": "vc",  # Default assumption
-                "firm_name": properties.get("name", ""),
+                "firm_name": name,
                 "email": None,  # Crunchbase doesn't provide direct email
                 "linkedin_url": properties.get("linkedin", {}).get("value"),
                 "focus_areas": self._extract_focus_areas(properties),
@@ -119,8 +122,11 @@ class ProspectingService:
     ) -> Optional[Dict[str, Any]]:
         """Parse AngelList investor data."""
         try:
+            name = investor.get("name")
+            if not name:
+                return None
             return {
-                "name": investor.get("name", ""),
+                "name": name,
                 "investor_type": "angel" if investor.get("type") == "angel" else "vc",
                 "firm_name": investor.get("company", {}).get("name"),
                 "email": investor.get("email"),

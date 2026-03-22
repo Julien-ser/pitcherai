@@ -119,8 +119,6 @@ class TestCampaignService:
             source="test",
         )
 
-        from pitcherai.schemas import InvestorCreate
-
         await crud.investor.create(session, obj_in=inv1)
         await crud.investor.create(session, obj_in=inv2)
         await crud.investor.create(session, obj_in=inv3)
