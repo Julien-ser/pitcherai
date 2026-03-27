@@ -271,6 +271,7 @@ GitHub Actions workflows are configured in `.github/workflows/`:
 - **ARCHITECTURE.md** - System design, components, and data flow
 - **CONTRIBUTING.md** - Guidelines for contributors
 - **DEPLOYMENT.md** - Deployment and operations guide
+- **DEPLOYMENT_VALIDATION.md** - Deployment validation report and checklist
 - **CHANGELOG.md** - Version history and release notes
 
 ## License
