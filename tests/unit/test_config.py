@@ -1,12 +1,16 @@
 """Tests for configuration module."""
 
 import pytest
-from pitcherai.config import Settings
+from pitcherai.config import get_settings
 
 
-def test_default_settings():
+def test_default_settings(monkeypatch):
     """Test that default settings are loaded correctly."""
-    settings = Settings()
+    # Clear any environment variables that might be set from .env
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("POSTGRES_PASSWORD", raising=False)
+    monkeypatch.delenv("API_BASE_URL", raising=False)
+    settings = get_settings()
     assert (
         settings.database_url
         == "postgresql+asyncpg://postgres:postgres@localhost:5432/pitcherai"
@@ -25,7 +29,7 @@ def test_env_override(monkeypatch):
     monkeypatch.setenv("OPENAI_MODEL", "gpt-4")
     monkeypatch.setenv("MAX_EMAILS_PER_DAY", "100")
 
-    settings = Settings()
+    settings = get_settings()
     assert settings.database_url == "postgresql://test:test@localhost:5432/testdb"
     assert settings.api_port == 9000
     assert settings.openai_model == "gpt-4"

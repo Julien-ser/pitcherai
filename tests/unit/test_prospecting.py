@@ -25,27 +25,27 @@ class TestProspectingService:
         self, prospecting_service: ProspectingService
     ):
         """Test that Crunchbase fetch returns empty when no API key."""
-        from pitcherai.config import settings
+        from pitcherai.config import get_get_settings()
 
         # Temporarily clear the API key
-        original_key = settings.crunchbase_api_key
-        settings.crunchbase_api_key = None
+        original_key = get_settings().crunchbase_api_key
+        get_settings().crunchbase_api_key = None
 
         result = await prospecting_service.fetch_crunchbase_investors(
             query="AI", limit=10
         )
 
         assert result == []
-        settings.crunchbase_api_key = original_key
+        get_settings().crunchbase_api_key = original_key
 
     async def test_fetch_crunchbase_investors_success(
         self, prospecting_service: ProspectingService
     ):
         """Test successful Crunchbase fetch with mocked response."""
-        from pitcherai.config import settings
+        from pitcherai.config import get_get_settings()
 
         # Ensure API key is set
-        if not settings.crunchbase_api_key:
+        if not get_settings().crunchbase_api_key:
             pytest.skip("Crunchbase API key not configured")
 
         # Mock the httpx client
@@ -133,25 +133,25 @@ class TestProspectingService:
         self, prospecting_service: ProspectingService
     ):
         """Test that AngelList fetch returns empty when no access token."""
-        from pitcherai.config import settings
+        from pitcherai.config import get_get_settings()
 
-        original_token = settings.angellist_access_token
-        settings.angellist_access_token = None
+        original_token = get_settings().angellist_access_token
+        get_settings().angellist_access_token = None
 
         result = await prospecting_service.fetch_angellist_investors(
             query="AI", limit=10
         )
 
         assert result == []
-        settings.angellist_access_token = original_token
+        get_settings().angellist_access_token = original_token
 
     async def test_fetch_angellist_investors_success(
         self, prospecting_service: ProspectingService
     ):
         """Test successful AngelList fetch with mocked response."""
-        from pitcherai.config import settings
+        from pitcherai.config import get_get_settings()
 
-        if not settings.angellist_access_token:
+        if not get_settings().angellist_access_token:
             pytest.skip("AngelList access token not configured")
 
         prospecting_service.client = AsyncMock()
@@ -342,9 +342,9 @@ class TestProspectingService:
         db_investor: Investor,
     ):
         """Test portfolio enrichment from Crunchbase."""
-        from pitcherai.config import settings
+        from pitcherai.config import get_get_settings()
 
-        if not settings.crunchbase_api_key:
+        if not get_settings().crunchbase_api_key:
             pytest.skip("Crunchbase API key not configured")
 
         # Add crunchbase_id to investor

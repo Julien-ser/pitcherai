@@ -70,7 +70,11 @@ class Settings(BaseSettings):
         default="redis://localhost:6379/2", description="Celery result backend"
     )
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="allow"
+    )
 
 
-settings = Settings()
+def get_settings() -> Settings:
+    """Get settings instance (useful for testing)."""
+    return Settings()

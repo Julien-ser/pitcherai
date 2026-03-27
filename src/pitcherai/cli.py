@@ -8,7 +8,6 @@ from uuid import UUID
 from pitcherai.database import init_db, close_db
 from pitcherai import crud
 from pitcherai.services.prospecting import prospecting_service
-from pitcherai.config import settings
 
 
 async def import_investors(queries: list[str], sources: list[str], limit: int):
